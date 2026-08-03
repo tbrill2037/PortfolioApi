@@ -1,0 +1,60 @@
+name: Deploy Email Outbox Worker
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "Portfolio.Application/**"
+      - "Portfolio.Domain/**"
+      - "Portfolio.Infra/**"
+      - "Portfolio.sln"
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::493534446004:role/GitHubActionsPortfolioDeploy
+          aws-region: us-east-1
+          audience: sts.amazonaws.com
+
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+
+      - name: Install Lambda Tools
+        run: |
+          dotnet tool install -g Amazon.Lambda.Tools
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Restore
+        run: dotnet restore Portfolio.sln
+
+      - name: Build
+        run: |
+          dotnet build \
+            Portfolio.EmailOutboxWorker/Portfolio.EmailOutboxWorker.csproj \
+            --configuration Release \
+            --no-restore
+
+      - name: Deploy Lambda
+        working-directory: Portfolio.EmailOutboxWorker
+        run: dotnet lambda deploy-function PortfolioEmailOutboxWorker

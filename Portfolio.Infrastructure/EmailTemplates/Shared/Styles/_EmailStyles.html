@@ -1,0 +1,691 @@
+﻿<style type="text/css">
+    /* =========================================================
+       EMAIL CLIENT RESETS
+       ========================================================= */
+
+    html,
+    body {
+        width: 100% !important;
+        min-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    body {
+        background-color: #ffffff;
+        color: #334155;
+        font-family: Arial, Helvetica, sans-serif;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+    }
+
+    table {
+        border-spacing: 0;
+        border-collapse: collapse;
+    }
+
+    td {
+        padding: 0;
+    }
+
+    img {
+        display: block;
+        height: auto;
+        border: 0;
+        outline: none;
+        text-decoration: none;
+        -ms-interpolation-mode: bicubic;
+    }
+
+    a {
+        color: #0EA5E9;
+        text-decoration: none;
+    }
+
+    p,
+    h1,
+    h2,
+    h3 {
+        margin: 0;
+    }
+
+    #outlook a {
+        padding: 0;
+    }
+
+    .ExternalClass {
+        width: 100%;
+    }
+
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass font,
+        .ExternalClass td,
+        .ExternalClass div {
+            line-height: 100%;
+        }
+
+    a[x-apple-data-detectors],
+    u + #body a,
+    #MessageViewBody a {
+        color: inherit !important;
+        font-family: inherit !important;
+        font-size: inherit !important;
+        font-weight: inherit !important;
+        line-height: inherit !important;
+        text-decoration: none !important;
+    }
+
+    /* =========================================================
+       EMAIL SHELL
+       ========================================================= */
+
+    .email-body {
+        width: 100%;
+        background-color: #ffffff;
+    }
+
+    .email-wrapper-cell {
+        padding: 32px 16px;
+    }
+
+    .email-container {
+        width: 100%;
+        max-width: 640px;
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    /* =========================================================
+       BRAND ACCENT
+       ========================================================= */
+
+    .brand-bar {
+        height: 4px;
+        background-color: #0EA5E9;
+        background-image: linear-gradient( 90deg, #0EA5E9 0%, #38BDF8 45%, #8B5CF6 100% );
+        font-size: 0;
+        line-height: 0;
+    }
+
+    /* =========================================================
+       HEADER
+       ========================================================= */
+
+    .email-header {
+        width: 100%;
+        background-color: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .email-header-cell {
+        padding: 28px 36px;
+    }
+
+    .brand-table {
+        width: 100%;
+    }
+
+    .brand-logo-cell {
+        width: 68px;
+        padding-right: 16px;
+        vertical-align: middle;
+    }
+
+    .brand-logo {
+        display: block;
+        width: 68px;
+        max-width: 68px;
+        height: auto;
+        margin: 0;
+        border: 0;
+        outline: none;
+    }
+
+    .brand-copy-cell {
+        vertical-align: middle;
+        text-align: left;
+    }
+
+    .brand-name {
+        margin: 0;
+        color: #0f172a;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 30px;
+        letter-spacing: -0.5px;
+    }
+
+    .brand-portfolio {
+        color: #0EA5E9;
+    }
+
+    .brand-studio {
+        color: #8B5CF6;
+    }
+
+    .brand-tagline {
+        margin: 4px 0 0;
+        color: #64748b;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 18px;
+        letter-spacing: 0.1px;
+    }
+
+    /* =========================================================
+       MAIN CONTENT
+       ========================================================= */
+
+    .email-content {
+        padding: 38px 36px 40px;
+        background-color: #ffffff;
+        color: #334155;
+        text-align: left;
+    }
+
+    .eyebrow {
+        margin: 0 0 10px;
+        color: #0EA5E9;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 16px;
+        letter-spacing: 1.1px;
+        text-transform: uppercase;
+    }
+
+    .email-content h1,
+    .email-content h2,
+    .email-content h3 {
+        color: #0f172a;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: 700;
+    }
+
+    .email-content h1 {
+        margin: 0 0 16px;
+        font-size: 28px;
+        line-height: 36px;
+        letter-spacing: -0.6px;
+    }
+
+    .email-content h2 {
+        margin: 0 0 12px;
+        font-size: 23px;
+        line-height: 30px;
+        letter-spacing: -0.35px;
+    }
+
+    .email-content h3 {
+        margin: 0 0 10px;
+        font-size: 17px;
+        line-height: 24px;
+    }
+
+    .email-content p {
+        margin: 0 0 18px;
+        color: #475569;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 24px;
+    }
+
+        .email-content p:last-child {
+            margin-bottom: 0;
+        }
+
+    .intro-text {
+        margin: 0 0 24px;
+        color: #64748b;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 15px;
+        line-height: 24px;
+    }
+
+    /* =========================================================
+       CONTACT DETAILS
+       ========================================================= */
+
+    .content-panel {
+        margin: 26px 0;
+        padding: 22px 22px 20px;
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-left: 4px solid #0EA5E9;
+        border-radius: 10px;
+    }
+
+    .content-row {
+        margin: 0 0 18px;
+    }
+
+        .content-row:last-child {
+            margin-bottom: 0;
+        }
+
+    .content-label {
+        margin: 0 0 4px;
+        color: #64748b;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 16px;
+        letter-spacing: 0.9px;
+        text-transform: uppercase;
+    }
+
+    .content-value {
+        margin: 0;
+        color: #1e293b;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 24px;
+    }
+
+    .content-link {
+        color: #0EA5E9 !important;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .message-text {
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    /* =========================================================
+       BUTTON
+       ========================================================= */
+
+    .button-table {
+        margin-top: 26px;
+    }
+
+    .button-cell {
+        background-color: #0EA5E9;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .button {
+        display: inline-block;
+        padding: 13px 22px;
+        background-color: #0EA5E9;
+        border: 1px solid #0EA5E9;
+        border-radius: 8px;
+        color: #ffffff !important;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 20px;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    /* =========================================================
+       FOOTER
+       ========================================================= */
+
+    .email-footer {
+        width: 100%;
+        background-color: #ffffff;
+        border-top: 1px solid #e2e8f0;
+        text-align: center;
+    }
+
+    .email-footer-cell {
+        padding: 28px 36px 30px;
+        text-align: center;
+    }
+
+    .footer-brand {
+        margin: 0 0 6px;
+        color: #0f172a;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 20px;
+    }
+
+    .footer-copy {
+        margin: 0;
+        color: #64748b;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 19px;
+    }
+
+    .social-table {
+        margin: 18px auto 0;
+    }
+
+    .social-cell {
+        padding: 0 9px;
+    }
+
+    .social-link {
+        display: inline-block;
+        text-decoration: none;
+    }
+
+    .social-icon {
+        display: block;
+        width: 22px;
+        max-width: 22px;
+        height: 22px;
+        margin: 0;
+        border: 0;
+        outline: none;
+    }
+
+    .footer-disclaimer {
+        margin: 18px 0 0;
+        color: #94a3b8;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 11px;
+        line-height: 17px;
+    }
+
+    /* =========================================================
+       DARK MODE
+       ========================================================= */
+
+    @media (prefers-color-scheme: dark) {
+        body,
+        .email-body {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+        }
+
+        .email-container,
+        .email-header,
+        .email-content,
+        .email-footer,
+        .content-panel {
+            background-color: #000000 !important;
+        }
+
+        .email-container {
+            border-color: #27272a !important;
+        }
+
+        .email-header {
+            border-bottom-color: #27272a !important;
+        }
+
+        .email-footer {
+            border-top-color: #27272a !important;
+        }
+
+        .brand-name,
+        .email-content h1,
+        .email-content h2,
+        .email-content h3,
+        .footer-brand {
+            color: #ffffff !important;
+        }
+
+        .brand-portfolio,
+        .eyebrow,
+        .content-link,
+        .content-value a {
+            color: #38BDF8 !important;
+        }
+
+        .brand-studio {
+            color: #8B5CF6 !important;
+        }
+
+        .brand-tagline,
+        .intro-text,
+        .email-content p {
+            color: #cbd5e1 !important;
+        }
+
+        .content-panel {
+            border-color: #27272a !important;
+            border-left-color: #38BDF8 !important;
+        }
+
+        .content-label {
+            color: #94a3b8 !important;
+        }
+
+        .content-value,
+        .message-text {
+            color: #f8fafc !important;
+        }
+
+        .button-cell,
+        .button {
+            background-color: #0EA5E9 !important;
+            border-color: #38BDF8 !important;
+            color: #ffffff !important;
+        }
+
+        .footer-copy {
+            color: #cbd5e1 !important;
+        }
+
+        .footer-disclaimer {
+            color: #94a3b8 !important;
+        }
+    }
+
+    /* =========================================================
+       OUTLOOK DARK MODE
+       ========================================================= */
+
+    [data-ogsc] body,
+    [data-ogsb] body,
+    [data-ogsc] .email-body,
+    [data-ogsb] .email-body {
+        background-color: #000000 !important;
+        color: #ffffff !important;
+    }
+
+    [data-ogsc] .email-container,
+    [data-ogsb] .email-container,
+    [data-ogsc] .email-header,
+    [data-ogsb] .email-header,
+    [data-ogsc] .email-content,
+    [data-ogsb] .email-content,
+    [data-ogsc] .email-footer,
+    [data-ogsb] .email-footer,
+    [data-ogsc] .content-panel,
+    [data-ogsb] .content-panel {
+        background-color: #000000 !important;
+    }
+
+    [data-ogsc] .email-container,
+    [data-ogsb] .email-container,
+    [data-ogsc] .content-panel,
+    [data-ogsb] .content-panel {
+        border-color: #27272a !important;
+    }
+
+    [data-ogsc] .email-header,
+    [data-ogsb] .email-header {
+        border-bottom-color: #27272a !important;
+    }
+
+    [data-ogsc] .email-footer,
+    [data-ogsb] .email-footer {
+        border-top-color: #27272a !important;
+    }
+
+    [data-ogsc] .brand-name,
+    [data-ogsb] .brand-name,
+    [data-ogsc] .email-content h1,
+    [data-ogsb] .email-content h1,
+    [data-ogsc] .email-content h2,
+    [data-ogsb] .email-content h2,
+    [data-ogsc] .email-content h3,
+    [data-ogsb] .email-content h3,
+    [data-ogsc] .footer-brand,
+    [data-ogsb] .footer-brand {
+        color: #ffffff !important;
+    }
+
+    [data-ogsc] .brand-portfolio,
+    [data-ogsb] .brand-portfolio,
+    [data-ogsc] .eyebrow,
+    [data-ogsb] .eyebrow,
+    [data-ogsc] .content-link,
+    [data-ogsb] .content-link,
+    [data-ogsc] .content-value a,
+    [data-ogsb] .content-value a {
+        color: #38BDF8 !important;
+    }
+
+    [data-ogsc] .brand-studio,
+    [data-ogsb] .brand-studio {
+        color: #8B5CF6 !important;
+    }
+
+    [data-ogsc] .brand-tagline,
+    [data-ogsb] .brand-tagline,
+    [data-ogsc] .intro-text,
+    [data-ogsb] .intro-text,
+    [data-ogsc] .email-content p,
+    [data-ogsb] .email-content p,
+    [data-ogsc] .footer-copy,
+    [data-ogsb] .footer-copy {
+        color: #cbd5e1 !important;
+    }
+
+    [data-ogsc] .content-panel,
+    [data-ogsb] .content-panel {
+        border-left-color: #38BDF8 !important;
+    }
+
+    [data-ogsc] .content-label,
+    [data-ogsb] .content-label,
+    [data-ogsc] .footer-disclaimer,
+    [data-ogsb] .footer-disclaimer {
+        color: #94a3b8 !important;
+    }
+
+    [data-ogsc] .content-value,
+    [data-ogsb] .content-value,
+    [data-ogsc] .message-text,
+    [data-ogsb] .message-text {
+        color: #f8fafc !important;
+    }
+
+    [data-ogsc] .button-cell,
+    [data-ogsb] .button-cell,
+    [data-ogsc] .button,
+    [data-ogsb] .button {
+        background-color: #0EA5E9 !important;
+        border-color: #38BDF8 !important;
+        color: #ffffff !important;
+    }
+
+    /* =========================================================
+       MOBILE
+       ========================================================= */
+
+    @media screen and (max-width: 640px) {
+        .email-wrapper-cell {
+            padding: 0 !important;
+        }
+
+        .email-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            border-right: 0 !important;
+            border-left: 0 !important;
+            border-radius: 0 !important;
+        }
+
+        .email-header-cell {
+            padding: 24px 22px !important;
+        }
+
+        .email-content {
+            padding: 30px 22px 32px !important;
+        }
+
+        .email-footer-cell {
+            padding: 26px 22px 28px !important;
+        }
+
+        .brand-logo-cell {
+            width: 60px !important;
+            padding-right: 14px !important;
+        }
+
+        .brand-logo {
+            width: 60px !important;
+            max-width: 60px !important;
+        }
+
+        .brand-name {
+            font-size: 21px !important;
+            line-height: 27px !important;
+        }
+
+        .brand-tagline {
+            font-size: 11px !important;
+            line-height: 17px !important;
+        }
+
+        .email-content h1 {
+            font-size: 25px !important;
+            line-height: 32px !important;
+        }
+
+        .email-content h2 {
+            font-size: 21px !important;
+            line-height: 28px !important;
+        }
+
+        .content-panel {
+            padding: 18px !important;
+        }
+
+        .button {
+            display: block !important;
+            width: auto !important;
+        }
+    }
+
+    @media screen and (max-width: 430px) {
+        .email-header-cell,
+        .email-content,
+        .email-footer-cell {
+            padding-right: 18px !important;
+            padding-left: 18px !important;
+        }
+
+        .brand-logo-cell {
+            width: 56px !important;
+            padding-right: 12px !important;
+        }
+
+        .brand-logo {
+            width: 56px !important;
+            max-width: 56px !important;
+        }
+
+        .brand-name {
+            font-size: 19px !important;
+            line-height: 24px !important;
+        }
+
+        .social-cell {
+            padding-right: 8px !important;
+            padding-left: 8px !important;
+        }
+    }
+</style>

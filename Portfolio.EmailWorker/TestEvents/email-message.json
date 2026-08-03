@@ -1,0 +1,11 @@
+{
+  "Records": [
+    {
+      "messageId": "6bbe08c4-8043-416e-93ad-9476a00773ce",
+      "body": "{\"Id\":\"a922ebcb-b2be-4d57-82af-d7cec4fe2846\",\"CorrelationId\":\"faaf7753-3b11-4d70-bab4-2e0c2146c3a4\",\"CampaignId\":\"00000000-0000-0000-0000-000000000000\",\"RecipientEmail\":{\"Address\":\"tony@tonybrill.dev\",\"DisplayName\":\"Tony Brill\"},\"SenderEmail\":{\"Address\":\"tbrill@tonybrill.dev\",\"DisplayName\":\"Tony Brill\"},\"Subject\":\"Wooo!! New Contact!\",\"TemplateType\":1,\"TemplatePath\":\"Outreach/ContactMe.html\",\"TemplateModel\":{\"SenderEmail\":\"tbrill@tonybrill.dev\",\"SenderFullName\":\"Tony Brill\",\"Message\":\"I am message!\"},\"RetryCount\":0,\"CreatedUtc\":\"2026-07-19T18:50:45.0217478Z\",\"Attachments\":[]}",
+      "attributes": {
+        "ApproximateReceiveCount": "1"
+      }
+    }
+  ]
+}

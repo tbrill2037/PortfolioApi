@@ -1,0 +1,61 @@
+using Portfolio.Api;
+using Portfolio.Application;
+using Portfolio.Application.Common.Logging;
+using Portfolio.Infra;
+using Portfolio.Infra.AWS.Configuration;
+using Portfolio.Infra.Extensions;
+using Scalar.AspNetCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+if (!builder.Environment.IsDevelopment())
+{
+    // Load secrets from AWS Secrets Manager into the configuration.
+    await SecretInitializer.LoadAsync(builder.Configuration, builder.Configuration["AWS:Secrets:SecretName"]);
+    await SecretInitializer.LoadAsync(builder.Configuration, builder.Configuration["AWS:Secrets:DatabaseSecretName"]);
+
+    DatabaseSecretInitializer.Load(builder.Configuration);
+}
+
+// ASP.NET Core
+builder.Services.ConfigureForwardedHeaders();
+builder.Services.AddApiControllers();
+builder.Services.AddHealthChecks();
+builder.Services.AddOpenApi();
+builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
+
+// Cross-cutting
+builder.Services.AddApiCors();
+builder.Services.AddApiRateLimiting();
+builder.Services.AddStructuredLogging(builder.Configuration, WorkerNames.API);
+
+// Application
+builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddApiInfrastructure(builder.Configuration);
+
+var app = builder.Build();
+
+// Centralized exception handling for consistent API error responses.
+app.UseMiddleware<ApiExceptionMiddleware>();
+
+// API documentation endpoints.
+app.MapOpenApi();
+app.MapScalarApiReference(options =>
+{
+    options
+    .WithTitle("Portfolio API")
+    .WithTheme(ScalarTheme.DeepSpace)
+    .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+});
+
+app.UseForwardedHeaders();
+app.UseHttpsRedirection();
+app.UseCors("CorsPolicy");
+app.UseRateLimiter();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapHealthChecks("/health");
+app.MapControllers();
+
+app.Run();

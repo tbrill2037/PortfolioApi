@@ -1,0 +1,20 @@
+{
+  "Records": [
+    {
+      "messageId": "77376aeb-f362-445a-bcf5-30459b609cb9",
+      "receiptHandle": "test-receipt-handle",
+      "body": "{\"Id\":\"77376aeb-f362-445a-bcf5-30459b609cb9\",\"CorrelationId\":\"308af9b2-e808-4830-a130-3535f74717be\",\"CampaignId\":\"00000000-0000-0000-0000-000000000000\",\"RecipientEmail\":{\"Address\":\"tony@tonybrill.dev\",\"DisplayName\":\"Tony Brill\"},\"SenderEmail\":{\"Address\":\"tony@tonybrill.dev\",\"DisplayName\":\"Tony Brill\"},\"Subject\":\"Wooo!! New Contact!\",\"TemplateType\":1,\"TemplatePath\":\"Outreach/ContactMe.html\",\"TemplateModel\":{\"SenderEmail\":\"tony@tonybrill.dev\",\"SenderFullName\":\"Tony Brill\",\"Message\":\"A test message!\"},\"RetryCount\":0,\"CreatedUtc\":\"2026-07-19T18:15:04.8421431Z\",\"Attachments\":[]}",
+      "attributes": {
+        "ApproximateReceiveCount": "3",
+        "SentTimestamp": "1720000000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1720000000000"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "test",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:email-dlq",
+      "awsRegion": "us-east-1"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio build files
+*.cache
+*.pdb
+*.dll
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Test output
+TestResults/
+
+# Publish output
+publish/
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# Test results
+TestResults/
+*.trx
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Environment / secrets
+.env
+.env.*
+*.local.json
+
+# ASP.NET Core
+appsettings.Development.json
+appsettings.Local.json
+
+# AWS
+.aws/
+
+# Publish output
+publish/

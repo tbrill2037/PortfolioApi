@@ -1,0 +1,19 @@
+{
+  "Records": [
+    {
+      "messageId": "sqs-test-001",
+      "receiptHandle": "test-receipt",
+      "body": "{\"SesMessageId\":\"0100019f82480dad-aa96d522-02b4-4436-a74b-dd5ed3eddbd7-000000\",\"EventType\":\"Open\",\"RawPayload\":\"{\\\"notificationType\\\":\\\"Delivery\\\",\\\"mail\\\":{\\\"messageId\\\":\\\"ses-test-001\\\"}}\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1710000000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1710000000000"
+      },
+      "messageAttributes": {},
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:493534446004:PortfolioEmailEventsQueue",
+      "awsRegion": "us-east-1"
+    }
+  ]
+}

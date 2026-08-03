@@ -1,0 +1,197 @@
+﻿<p class="eyebrow"
+   style="
+       margin:0 0 10px;
+       padding:0;
+       color:#0EA5E9;
+       font-family:Arial, Helvetica, sans-serif;
+       font-size:11px;
+       font-weight:700;
+       line-height:16px;
+       letter-spacing:1.1px;
+       text-transform:uppercase;
+   ">
+    Contact request
+</p>
+
+<h1 style="
+        margin:0 0 16px;
+        padding:0;
+        color:#0f172a;
+        font-family:Arial, Helvetica, sans-serif;
+        font-size:28px;
+        font-weight:700;
+        line-height:36px;
+        letter-spacing:-0.6px;
+    ">
+    New portfolio inquiry
+</h1>
+
+<p class="intro-text"
+   style="
+       margin:0 0 24px;
+       padding:0;
+       color:#64748b;
+       font-family:Arial, Helvetica, sans-serif;
+       font-size:15px;
+       font-weight:400;
+       line-height:24px;
+   ">
+    Someone submitted a new message through your portfolio contact form.
+</p>
+
+<div class="content-panel"
+     style="
+         margin:26px 0;
+         padding:22px 22px 20px;
+         background-color:#ffffff;
+         border:1px solid #e2e8f0;
+         border-left:4px solid #0EA5E9;
+         border-radius:10px;
+     ">
+
+    <div class="content-row"
+         style="margin:0 0 18px;">
+
+        <p class="content-label"
+           style="
+               margin:0 0 4px;
+               padding:0;
+               color:#64748b;
+               font-family:Arial, Helvetica, sans-serif;
+               font-size:11px;
+               font-weight:700;
+               line-height:16px;
+               letter-spacing:0.9px;
+               text-transform:uppercase;
+           ">
+            Name
+        </p>
+
+        <p class="content-value"
+           style="
+               margin:0;
+               padding:0;
+               color:#1e293b;
+               font-family:Arial, Helvetica, sans-serif;
+               font-size:15px;
+               font-weight:400;
+               line-height:24px;
+           ">
+            {{ TemplateModel.Name }}
+        </p>
+    </div>
+
+    <div class="content-row"
+         style="margin:0 0 18px;">
+
+        <p class="content-label"
+           style="
+               margin:0 0 4px;
+               padding:0;
+               color:#64748b;
+               font-family:Arial, Helvetica, sans-serif;
+               font-size:11px;
+               font-weight:700;
+               line-height:16px;
+               letter-spacing:0.9px;
+               text-transform:uppercase;
+           ">
+            Email
+        </p>
+
+        <p class="content-value"
+           style="
+               margin:0;
+               padding:0;
+               color:#1e293b;
+               font-family:Arial, Helvetica, sans-serif;
+               font-size:15px;
+               font-weight:400;
+               line-height:24px;
+           ">
+
+            <a href="mailto:{{ TemplateModel.Email }}"
+               class="content-link"
+               style="
+                   color:#0EA5E9;
+                   font-weight:600;
+                   text-decoration:none;
+               ">
+                {{ TemplateModel.Email }}
+            </a>
+        </p>
+    </div>
+
+    <div class="content-row"
+         style="margin:0;">
+
+        <p class="content-label"
+           style="
+               margin:0 0 4px;
+               padding:0;
+               color:#64748b;
+               font-family:Arial, Helvetica, sans-serif;
+               font-size:11px;
+               font-weight:700;
+               line-height:16px;
+               letter-spacing:0.9px;
+               text-transform:uppercase;
+           ">
+            Message
+        </p>
+
+        <p class="content-value message-text"
+           style="
+               margin:0;
+               padding:0;
+               color:#1e293b;
+               font-family:Arial, Helvetica, sans-serif;
+               font-size:15px;
+               font-weight:400;
+               line-height:24px;
+               white-space:pre-wrap;
+               word-break:break-word;
+            ">{{ TemplateModel.Message }}</p>
+    </div>
+</div>
+
+<table role="presentation"
+       cellpadding="0"
+       cellspacing="0"
+       border="0"
+       class="button-table"
+       style="
+           margin:26px 0 0;
+           border-spacing:0;
+           border-collapse:collapse;
+       ">
+    <tr>
+        <td align="center"
+            class="button-cell"
+            style="
+                background-color:#0EA5E9;
+                border-radius:8px;
+                text-align:center;
+            ">
+
+            <a href="mailto:{{ TemplateModel.Email }}"
+               class="button"
+               style="
+                   display:inline-block;
+                   padding:13px 22px;
+                   background-color:#0EA5E9;
+                   border:1px solid #0EA5E9;
+                   border-radius:8px;
+                   color:#ffffff;
+                   font-family:Arial, Helvetica, sans-serif;
+                   font-size:14px;
+                   font-weight:700;
+                   line-height:20px;
+                   text-align:center;
+                   text-decoration:none;
+               ">
+                Reply to {{ TemplateModel.Name }}
+            </a>
+        </td>
+    </tr>
+</table>
