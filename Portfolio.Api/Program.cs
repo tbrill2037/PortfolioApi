@@ -1,4 +1,5 @@
 using Portfolio.Api;
+using Portfolio.Api.Middleware;
 using Portfolio.Application;
 using Portfolio.Application.Common.Logging;
 using Portfolio.Infra;
@@ -37,6 +38,9 @@ var app = builder.Build();
 
 // Centralized exception handling for consistent API error responses.
 app.UseMiddleware<ApiExceptionMiddleware>();
+
+// Prevents search engines from indexing API documentation endpoints.
+app.UseApiDocumentationRobots();
 
 // API documentation endpoints.
 app.MapOpenApi();
