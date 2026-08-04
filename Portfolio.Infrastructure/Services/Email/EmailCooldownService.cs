@@ -54,7 +54,7 @@ public sealed class EmailCooldownService : IEmailCooldownService
     {
         return emailType switch
         {
-            EmailType.ContactMe => TimeSpan.FromMinutes(5),
+            EmailType.Contact => TimeSpan.FromMinutes(5),
             EmailType.PasswordReset => TimeSpan.FromMinutes(5),
             EmailType.Verification => TimeSpan.FromMinutes(1),
             _ => TimeSpan.Zero,

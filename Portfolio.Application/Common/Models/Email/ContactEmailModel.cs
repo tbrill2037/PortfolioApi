@@ -6,7 +6,7 @@
 /// This model is specifically for email presentation.
 /// It should not be reused as an API request DTO.
 /// </summary>
-public sealed class ContactMeEmailModel : IEmailTemplateModel
+public sealed class ContactEmailModel : IEmailTemplateModel
 {
     /// <summary>
     /// Name submitted by the visitor.

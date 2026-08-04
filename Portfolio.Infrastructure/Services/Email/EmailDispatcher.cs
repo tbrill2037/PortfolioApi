@@ -37,8 +37,8 @@ public sealed class EmailDispatcher : IEmailDispatcher
     /// <summary>
     /// Creates and queues a contact request email.
     /// </summary>
-    public async Task QueueContactMeEmailAsync(
-        ContactMeRequestDTO request,
+    public async Task QueueContactEmailAsync(
+        ContactEmailRequestDTO request,
         CancellationToken cancellationToken = default)
     {
         var clientIp = _clientIpService.GetClientIp();
@@ -48,7 +48,7 @@ public sealed class EmailDispatcher : IEmailDispatcher
             {
                 EmailAddress = request.Email,
                 IpAddress = clientIp,
-                EmailType = EmailType.ContactMe,
+                EmailType = EmailType.Contact,
             },
             cancellationToken);
 
@@ -68,11 +68,11 @@ public sealed class EmailDispatcher : IEmailDispatcher
                 DisplayName = request.Name
             },
 
-            Subject = EmailTemplateSubjects.ContactMe,
-            TemplateType = EmailType.ContactMe,
-            TemplatePath = EmailTemplatePaths.ContactMe,
+            Subject = EmailTemplateSubjects.Contact,
+            TemplateType = EmailType.Contact,
+            TemplatePath = EmailTemplatePaths.Contact,
 
-            TemplateModel = new ContactMeEmailModel
+            TemplateModel = new ContactEmailModel
             {
                 Name = request.Name,
                 Email = request.Email,

@@ -1,12 +1,12 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Portfolio.Application.Commands.Email.ContactMe;
+using Portfolio.Application.Commands.Email.Contact;
 using Portfolio.Application.Common.Responses;
 
 namespace Portfolio.Api.Controllers;
 
-[Route("[controller]")]
+[Route("email")]
 [ApiController]
 [EnableRateLimiting("EmailRequestPolicy")]
 [Produces("application/json")]
@@ -32,7 +32,7 @@ public sealed class EmailController : ControllerBase
     /// <returns>
     /// A response indicating that the message was successfully queued.
     /// </returns>
-    [HttpPost("ContactMe")]
+    [HttpPost("contact")]
     [Consumes("application/json")]
     [ProducesResponseType(
         typeof(ApiResponse),
@@ -46,9 +46,7 @@ public sealed class EmailController : ControllerBase
     [ProducesResponseType(
         typeof(ApiResponse),
         StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<ApiResponse>>
-        QueueContactMeEmail(
-            [FromBody] QueueContactMeCommand command)
+    public async Task<ActionResult<ApiResponse>> QueueContactEmail([FromBody] QueueContactEmailCommand command)
     {
         await _mediator.Send(command);
 

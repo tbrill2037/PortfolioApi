@@ -5,5 +5,5 @@
 /// </summary>
 public static class EmailTemplateSubjects
 {
-    public const string ContactMe = "New Portfolio Contact Request";
+    public const string Contact = "New Portfolio Contact Request";
 }

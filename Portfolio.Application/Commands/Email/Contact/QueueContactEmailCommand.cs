@@ -1,11 +1,11 @@
 ﻿using MediatR;
 
-namespace Portfolio.Application.Commands.Email.ContactMe;
+namespace Portfolio.Application.Commands.Email.Contact;
 
 /// <summary>
-/// Represents a request to queue a Contact Me email for asynchronous processing.
+/// Represents a request to queue a Contact Email for asynchronous processing.
 /// </summary>
-public sealed record QueueContactMeCommand : IRequest
+public sealed record QueueContactEmailCommand : IRequest
 {
     /// <summary>
     /// Name of the person submitting the message.

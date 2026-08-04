@@ -17,8 +17,8 @@ public sealed class EmailTemplateModelResolver : IEmailTemplateModelResolver
     {
         return templateType switch
         {
-            nameof(EmailType.ContactMe) =>
-                typeof(ContactMeEmailModel),
+            nameof(EmailType.Contact) =>
+                typeof(ContactEmailModel),
 
             _ => throw new InvalidTemplateModelException(templateType)
         };
