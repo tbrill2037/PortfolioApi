@@ -12,18 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 if (!builder.Environment.IsDevelopment())
 {
     // Load secrets from AWS Secrets Manager into the configuration.
-    await SecretInitializer.LoadAsync(
-        builder.Configuration,
-        builder.Configuration[
-            "AWS:Secrets:SecretName"]);
+    await SecretInitializer.LoadAsync(builder.Configuration, builder.Configuration["AWS:Secrets:SecretName"]);
 
-    await SecretInitializer.LoadAsync(
-        builder.Configuration,
-        builder.Configuration[
-            "AWS:Secrets:DatabaseSecretName"]);
+    await SecretInitializer.LoadAsync(builder.Configuration, builder.Configuration["AWS:Secrets:DatabaseSecretName"]);
 
-    DatabaseSecretInitializer.Load(
-        builder.Configuration);
+    DatabaseSecretInitializer.Load(builder.Configuration);
 }
 
 // ASP.NET Core
@@ -31,29 +24,21 @@ builder.Services.ConfigureForwardedHeaders();
 builder.Services.AddApiControllers();
 builder.Services.AddHealthChecks();
 
-builder.Services.AddOpenAPIServices(
-    builder.Configuration,
-    builder.Environment);
+builder.Services.AddOpenAPIServices(builder.Configuration, builder.Environment);
 
-builder.Services.AddAWSLambdaHosting(
-    LambdaEventSource.HttpApi);
+builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 // Cross-cutting
-builder.Services.AddApiCors(
-    builder.Configuration);
+builder.Services.AddApiCors(builder.Configuration);
 
 builder.Services.AddApiRateLimiting();
 
-builder.Services.AddStructuredLogging(
-    builder.Configuration,
-    WorkerNames.API);
+builder.Services.AddStructuredLogging(builder.Configuration, WorkerNames.API);
 
 // Application
-builder.Services.AddApplicationServices(
-    builder.Configuration);
+builder.Services.AddApplicationServices(builder.Configuration);
 
-builder.Services.AddApiInfrastructure(
-    builder.Configuration);
+builder.Services.AddApiInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 

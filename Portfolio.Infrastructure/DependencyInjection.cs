@@ -82,6 +82,7 @@ public static class DependencyInjection
             {
                 builder
                     .WithOrigins(allowedOrigins)
+                    .WithMethods("GET")
                     .WithMethods("POST")
                     .WithHeaders("Content-Type");
             });

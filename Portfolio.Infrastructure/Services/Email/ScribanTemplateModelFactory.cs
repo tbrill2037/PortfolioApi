@@ -23,8 +23,8 @@ public static class ScribanTemplateModelFactory
 
         return model switch
         {
-            ContactMeEmailModel contact =>
-                CreateContactMeModel(contact),
+            ContactEmailModel contact =>
+                CreateContactEmailModel(contact),
 
             _ => throw new InvalidOperationException(
                 $"Unsupported email template model '{model.GetType().Name}'.")
@@ -35,8 +35,8 @@ public static class ScribanTemplateModelFactory
     /// <summary>
     /// Creates the Scriban model for Contact Me emails.
     /// </summary>
-    private static ScriptObject CreateContactMeModel(
-        ContactMeEmailModel model)
+    private static ScriptObject CreateContactEmailModel(
+        ContactEmailModel model)
     {
         return new ScriptObject
         {

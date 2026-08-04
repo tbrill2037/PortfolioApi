@@ -12,5 +12,5 @@ public interface IEmailDispatcher
     /// </summary>
     /// <param name="request">The Contact Me email request.</param>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
-    Task QueueContactMeEmailAsync(ContactMeRequestDTO request, CancellationToken cancellationToken = default);
+    Task QueueContactEmailAsync(ContactEmailRequestDTO request, CancellationToken cancellationToken = default);
 }

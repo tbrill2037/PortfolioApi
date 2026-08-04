@@ -12,7 +12,7 @@ public static class EmailTemplatePaths
     public const string DefaultFooter = "Shared/Footers/Default.html";
     public const string PortfolioHeader = "Shared/Headers/Portfolio.html";
     public const string PortfolioFooter = "Shared/Footers/Portfolio.html";
-    public const string ContactMe = "Contact/Contact.v1.html";
+    public const string Contact = "Contact/Contact.v1.html";
 
     /// <summary>
     /// Gets the header template for the specified email type.
@@ -21,7 +21,7 @@ public static class EmailTemplatePaths
     {
         return emailType switch
         {
-            EmailType.ContactMe => PortfolioHeader,
+            EmailType.Contact => PortfolioHeader,
             _ => DefaultHeader
         };
     }
@@ -33,7 +33,7 @@ public static class EmailTemplatePaths
     {
         return emailType switch
         {
-            EmailType.ContactMe => PortfolioFooter,
+            EmailType.Contact => PortfolioFooter,
             _ => DefaultFooter
         };
     }

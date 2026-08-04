@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents the data required to submit a contact email request.
 /// </summary>
-public sealed class ContactMeRequestDTO
+public sealed class ContactEmailRequestDTO
 {
     public required string Email { get; init; }
      

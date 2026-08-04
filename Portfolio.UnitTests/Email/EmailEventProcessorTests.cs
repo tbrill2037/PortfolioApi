@@ -8,7 +8,6 @@ using Portfolio.Application.Common.Models.Email;
 using Portfolio.Domain.Entities.Email;
 using Portfolio.Domain.Enums.Email;
 using Portfolio.Infra.Data;
-using Portfolio.Infra.Email.Models;
 using Portfolio.Infra.Services.Email;
 using Xunit;
 
@@ -116,7 +115,7 @@ public class EmailEventProcessorTests
             Sender = "tony@tonybrill.dev",
             SenderName = "Tony Brill",
             Subject = "New Email",
-            TemplatePath = EmailType.ContactMe.ToString(),
+            TemplatePath = EmailType.Contact.ToString(),
         };
 
         _emailRepo

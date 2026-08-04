@@ -1,13 +1,13 @@
 ﻿using FluentValidation;
 
-namespace Portfolio.Application.Commands.Email.ContactMe;
+namespace Portfolio.Application.Commands.Email.Contact;
 
 /// <summary>
-/// Validates Contact Me requests before they are queued for processing.
+/// Validates Contact Email requests before they are queued for processing.
 /// </summary>
-public sealed class QueueContactMeCommandValidator : AbstractValidator<QueueContactMeCommand>
+public sealed class QueueContactEmailCommandValidator : AbstractValidator<QueueContactEmailCommand>
 {
-    public QueueContactMeCommandValidator()
+    public QueueContactEmailCommandValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty()

@@ -6,7 +6,7 @@
 public enum EmailType
 {
     Unknown = 0,
-    ContactMe = 1,
+    Contact = 1,
     PasswordReset = 2,
     Verification = 3,
 }
