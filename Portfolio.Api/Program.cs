@@ -21,11 +21,11 @@ if (!builder.Environment.IsDevelopment())
 builder.Services.ConfigureForwardedHeaders();
 builder.Services.AddApiControllers();
 builder.Services.AddHealthChecks();
-builder.Services.AddOpenApi();
+builder.Services.AddOpenAPIServices(builder.Configuration, builder.Environment);
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 // Cross-cutting
-builder.Services.AddApiCors();
+builder.Services.AddApiCors(builder.Configuration);
 builder.Services.AddApiRateLimiting();
 builder.Services.AddStructuredLogging(builder.Configuration, WorkerNames.API);
 

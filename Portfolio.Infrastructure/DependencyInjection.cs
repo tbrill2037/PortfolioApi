@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -69,17 +68,22 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddApiCors(this IServiceCollection services)
+    public static IServiceCollection AddApiCors(this IServiceCollection services, IConfiguration configuration)
     {
+        var allowedOrigins =
+            configuration
+                .GetSection("Cors:AllowedOrigins")
+                .Get<string[]>()
+            ?? [];
+
         services.AddCors(options =>
         {
             options.AddPolicy("CorsPolicy", builder =>
             {
                 builder
-                    .WithOrigins("https://localhost:7219")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
+                    .WithOrigins(allowedOrigins)
+                    .WithMethods("POST")
+                    .WithHeaders("Content-Type");
             });
         });
 

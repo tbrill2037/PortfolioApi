@@ -5,11 +5,20 @@ namespace Portfolio.Application.Commands.Email.ContactMe;
 /// <summary>
 /// Represents a request to queue a Contact Me email for asynchronous processing.
 /// </summary>
-public sealed class QueueContactMeCommand : IRequest
+public sealed record QueueContactMeCommand : IRequest
 {
-    public required string Email { get; set; }
+    /// <summary>
+    /// Name of the person submitting the message.
+    /// </summary>
+    public required string Name { get; init; }
 
-    public required string Name { get; set; }
+    /// <summary>
+    /// Email address that can be used to reply.
+    /// </summary>
+    public required string Email { get; init; }
 
-    public required string Message { get; set; }
+    /// <summary>
+    /// Message submitted by the portfolio visitor.
+    /// </summary>
+    public required string Message { get; init; }
 }
