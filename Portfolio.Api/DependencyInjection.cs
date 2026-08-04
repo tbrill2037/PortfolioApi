@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.OpenApi;
 using System.Text.Json;
 using System.Threading.RateLimiting;
 
@@ -28,6 +29,40 @@ public static class DependencyInjection
                     options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 });
+
+        return services;
+    }
+
+    public static IServiceCollection AddOpenAPIServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+    {
+        services.AddOpenApi(options =>
+        {
+            options.AddDocumentTransformer(
+                (document, context, cancellationToken) =>
+                {
+                    document.Info.Title = configuration["AWS:SES:FromName"] + " Portfolio API";
+                    document.Info.Version = "v1";
+                    document.Info.Description = "Public API supporting the " + configuration["AWS:SES:FromName"] + " developer portfolio.";
+
+                    var serverUrl = configuration["OpenApi:ServerUrl"];
+
+                    if (!string.IsNullOrWhiteSpace(serverUrl))
+                    {
+                        document.Servers =
+                        [
+                            new OpenApiServer
+                            {
+                                Url = serverUrl,
+                                Description = environment.IsDevelopment()
+                                    ? "Local development server"
+                                    : "Production server",
+                            },
+                        ];
+                    }
+
+                    return Task.CompletedTask;
+                });
+        });
 
         return services;
     }
