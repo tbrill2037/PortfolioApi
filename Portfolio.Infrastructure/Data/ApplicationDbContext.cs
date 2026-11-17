@@ -36,7 +36,7 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             // SES message IDs identify accepted email requests and are unique.
             entity.HasIndex(x => x.SesMessageId)
                 .IsUnique()
-                .HasFilter("[SesMessageId] IS NOT NULL");
+                .HasFilter("\"SesMessageId\" IS NOT NULL");
 
             // Supports processing lock recovery and worker queries.
             entity.HasIndex(x => new

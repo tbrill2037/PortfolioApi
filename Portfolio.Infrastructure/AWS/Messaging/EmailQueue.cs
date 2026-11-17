@@ -9,6 +9,10 @@ using Portfolio.Domain.Entities.Email;
 using Portfolio.Domain.Enums.Email;
 using Portfolio.Infra.Data;
 using System.Text.Json;
+using Amazon.SQS;
+using Amazon.SQS.Model;
+using Microsoft.Extensions.Options;
+using Portfolio.Infra.AWS.Configuration;
 
 namespace Portfolio.Infra.AWS.Messaging;
 
@@ -22,19 +26,25 @@ public sealed class EmailQueue : IEmailQueue
     private readonly IEmailOutboxRepository _outboxRepository;
     private readonly ApplicationDbContext _dbContext;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAmazonSQS _sqsClient;
+    private readonly SqsOptions _sqsOptions;
 
     public EmailQueue(
         ILogger<EmailQueue> logger,
         IEmailRepository emailRepository,
         IEmailOutboxRepository outboxRepository,
         ApplicationDbContext dbContext,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IAmazonSQS sqsClient,
+        IOptions<SqsOptions> sqsOptions)
     {
         _logger = logger;
         _emailRepository = emailRepository;
         _outboxRepository = outboxRepository;
         _dbContext = dbContext;
         _httpContextAccessor = httpContextAccessor;
+        _sqsClient = sqsClient;
+        _sqsOptions = sqsOptions.Value;
     }
 
     public async Task EnqueueAsync(EmailMessage message, CancellationToken cancellationToken = default)
@@ -108,5 +118,34 @@ public sealed class EmailQueue : IEmailQueue
                 throw;
             }
         });
+
+        try
+        {
+            await NotifyOutboxWorkerAsync(message.Id, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to notify outbox worker for email {EmailId}. The email remains persisted and will be picked up by scheduled reconciliation.",
+                message.Id);
+        }
+    }
+
+    private async Task NotifyOutboxWorkerAsync(Guid emailId, CancellationToken cancellationToken)
+    {
+        var request = new SendMessageRequest
+        {
+            QueueUrl = _sqsOptions.OutboxQueueUrl,
+            MessageBody = JsonSerializer.Serialize(new
+            {
+                EmailId = emailId,
+                EventType = "ProcessOutbox"
+            })
+        };
+
+        await _sqsClient.SendMessageAsync(request, cancellationToken);
+
+        _logger.LogInformation("Outbox worker notified for email {EmailId}.", emailId);
     }
 }

@@ -29,4 +29,5 @@ public static class LoggingProperties
     public const string SnsMessageId = nameof(SnsMessageId);
     public const string SesReceivedUtc = nameof(SesReceivedUtc);
     public const string OutboxMessageId = nameof(OutboxMessageId);
+    public const string TriggerType = nameof(TriggerType);
 }

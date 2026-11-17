@@ -37,14 +37,16 @@ public sealed class EmailOutboxRepository : IEmailOutboxRepository
 
             var messages = await _context.EmailOutboxes
                 .FromSqlInterpolated($@"
-                    SELECT TOP ({batchSize}) *
-                    FROM EmailOutboxes WITH (UPDLOCK, READPAST, ROWLOCK)
-                    WHERE ProcessedUtc IS NULL
-                    AND (
-                        ProcessingLockUntilUtc IS NULL
-                        OR ProcessingLockUntilUtc < {now}
-                    )
-                    ORDER BY CreatedUtc")
+                SELECT *
+                FROM ""EmailOutboxes""
+                WHERE ""ProcessedUtc"" IS NULL
+                AND (
+                    ""ProcessingLockUntilUtc"" IS NULL
+                    OR ""ProcessingLockUntilUtc"" < {now}
+                )
+                ORDER BY ""CreatedUtc""
+                LIMIT {batchSize}
+                FOR UPDATE SKIP LOCKED")
                 .ToListAsync(cancellationToken);
 
             foreach (var message in messages)

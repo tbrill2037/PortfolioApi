@@ -33,22 +33,22 @@ public static class DependencyInjection
     {
         services.Configure<DatabaseOptions>(configuration.GetSection(DatabaseOptions.SectionName));
 
-        services.AddSingleton<SqlConnectionStringFactory>();
+        services.AddSingleton<PostgresConnectionStringFactory>();
 
         services.AddDbContext<ApplicationDbContext>(
             (serviceProvider, options) =>
             {
                 var connectionFactory = serviceProvider
-                    .GetRequiredService<SqlConnectionStringFactory>();
+                    .GetRequiredService<PostgresConnectionStringFactory>();
 
-                options.UseSqlServer(
+                options.UseNpgsql(
                     connectionFactory.Create(),
-                    sqlOptions =>
+                    npgSqlOptions =>
                     {
-                        sqlOptions.MigrationsAssembly(
+                        npgSqlOptions.MigrationsAssembly(
                             typeof(ApplicationDbContext).Assembly.FullName);
 
-                        sqlOptions.EnableRetryOnFailure();
+                        npgSqlOptions.EnableRetryOnFailure();
                     });
             });
 
