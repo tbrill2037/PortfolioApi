@@ -1,6 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 using Portfolio.Application.Common.Interfaces.Email;
 using Portfolio.Application.Common.Logging;
 using Portfolio.Application.Common.Models.Email;
@@ -197,7 +197,7 @@ public sealed class EmailEventProcessor : IEmailEventProcessor
 
     private static bool IsDuplicateKeyViolation(DbUpdateException ex)
     {
-        return ex.InnerException is SqlException sqlException
-            && (sqlException.Number == 2601 || sqlException.Number == 2627);
+        return ex.InnerException is PostgresException postgresException
+            && postgresException.SqlState == PostgresErrorCodes.UniqueViolation;
     }
 }

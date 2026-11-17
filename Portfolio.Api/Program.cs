@@ -13,10 +13,6 @@ if (!builder.Environment.IsDevelopment())
 {
     // Load secrets from AWS Secrets Manager into the configuration.
     await SecretInitializer.LoadAsync(builder.Configuration, builder.Configuration["AWS:Secrets:SecretName"]);
-
-    await SecretInitializer.LoadAsync(builder.Configuration, builder.Configuration["AWS:Secrets:DatabaseSecretName"]);
-
-    DatabaseSecretInitializer.Load(builder.Configuration);
 }
 
 // ASP.NET Core

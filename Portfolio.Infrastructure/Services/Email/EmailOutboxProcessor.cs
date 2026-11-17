@@ -18,12 +18,12 @@ namespace Portfolio.Infra.Services.Email;
 public sealed class EmailOutboxProcessor : IEmailOutboxProcessor
 {
     private const int BatchSize = 20;
-    private const int MaxRetryCount = 5;
     private static readonly TimeSpan LockDuration = TimeSpan.FromMinutes(5);
 
     private readonly IEmailOutboxRepository _emailOutboxRepository;
     private readonly IAmazonSQS _sqs;
     private readonly SqsOptions _sqsOptions;
+    private readonly int _maxRetryCount;
     private readonly ILogger<EmailOutboxProcessor> _logger;
 
     public EmailOutboxProcessor(
@@ -35,6 +35,7 @@ public sealed class EmailOutboxProcessor : IEmailOutboxProcessor
         _emailOutboxRepository = emailOutboxRepository;
         _sqs = sqs;
         _sqsOptions = sqsOptions.Value;
+        _maxRetryCount = _sqsOptions.MaxEmailRetries;
         _logger = logger;
     }
 
@@ -201,7 +202,7 @@ private async Task HandleFailureAsync(
 
         message.RetryCount++;
 
-        if (message.RetryCount >= MaxRetryCount)
+        if (message.RetryCount >= _maxRetryCount)
         {
             await _emailOutboxRepository.MarkFailedAsync(
                 message.Id,

@@ -24,9 +24,6 @@ public static class Startup
 
         // Load secrets from AWS Secrets Manager into the configuration.
         await SecretInitializer.LoadAsync(configuration, configuration["AWS:Secrets:SecretName"]);
-        await SecretInitializer.LoadAsync(configuration, configuration["AWS:Secrets:DatabaseSecretName"]);
-
-        DatabaseSecretInitializer.Load(configuration);
 
         var services = new ServiceCollection();
 

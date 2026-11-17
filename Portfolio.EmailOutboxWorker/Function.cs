@@ -29,9 +29,16 @@ public sealed class Function
     /// <summary>
     /// Processes pending email outbox records and publishes them to the email queue.
     /// </summary>
-    public async Task FunctionHandler(ILambdaContext context)
+    public async Task FunctionHandler(System.Text.Json.JsonElement request, ILambdaContext context)
     {
         var functionStopwatch = Stopwatch.StartNew();
+
+        var isSqsEvent =
+            request.TryGetProperty("Records", out var records)
+            && records.ValueKind == System.Text.Json.JsonValueKind.Array
+            && records.GetArrayLength() > 0;
+
+        var triggerType = isSqsEvent ? "SQS" : "Scheduled";
 
         var serviceProvider = await _serviceProvider.Value;
 
@@ -40,7 +47,7 @@ public sealed class Function
         var logger = serviceProvider.GetRequiredService<ILogger<Function>>();
         var timeoutProvider = serviceProvider.GetRequiredService<ILambdaExecutionTimeoutProvider>();
 
-        var queueName = AwsResourceParser.GetQueueNameFromUrl(sqsOptions.EmailQueueUrl);
+        var queueName = AwsResourceParser.GetQueueNameFromUrl(sqsOptions.OutboxQueueUrl);
         var buffer = lambdaOptions.EmailOutboxProcessorBuffer;
 
         using var invocationScope = logger.BeginScope(new Dictionary<string, object?>
@@ -50,11 +57,10 @@ public sealed class Function
             [LoggingProperties.QueueName] = queueName,
             [LoggingProperties.QueueType] = QueueTypes.EmailOutbox,
             [LoggingProperties.AwsRequestId] = context.AwsRequestId,
+            [LoggingProperties.TriggerType] = triggerType,
         });
 
-        logger.LogInformation(
-            "{EventName} | Email outbox processing started.",
-            EmailLogEvents.Worker.ProcessingStarted);
+        logger.LogInformation("{EventName} | Email outbox processing started.", EmailLogEvents.Worker.ProcessingStarted);
 
         try
         {

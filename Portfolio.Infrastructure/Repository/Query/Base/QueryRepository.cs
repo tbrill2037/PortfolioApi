@@ -1,16 +1,42 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿
+using Microsoft.EntityFrameworkCore;
 using Portfolio.Domain.Repositories.Query.Base;
 using Portfolio.Infra.Data;
 
 namespace Portfolio.Infra.Repository.Query.Base;
 
-/// <summary>
-/// Provides a base implementation for query repositories.
-/// </summary>
-public class QueryRepository<T> : DbConnector, IQueryRepository<T> where T : class
+public class QueryRepository<T> : IQueryRepository<T> where T : class
 {
-    public QueryRepository(IConfiguration configuration)
-        : base(configuration)
+    protected readonly ApplicationDbContext _context;
+
+    public QueryRepository(ApplicationDbContext context)
     {
+        _context = context;
+    }
+
+    public async Task<T?> GetByIdAsync(
+        object id,
+        CancellationToken cancellationToken)
+    {
+        return await _context.Set<T>().FindAsync(
+            [id],
+            cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<T>> GetAllAsync(
+        CancellationToken cancellationToken)
+    {
+        return await _context.Set<T>()
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<bool> ExistsAsync(
+        object id,
+        CancellationToken cancellationToken)
+    {
+        return await _context.Set<T>().FindAsync(
+            [id],
+            cancellationToken) is not null;
     }
 }
