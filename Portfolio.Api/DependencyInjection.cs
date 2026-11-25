@@ -40,9 +40,9 @@ public static class DependencyInjection
             options.AddDocumentTransformer(
                 (document, context, cancellationToken) =>
                 {
-                    document.Info.Title = configuration["AWS:SES:FromName"] + " Portfolio API";
+                    document.Info.Title = configuration["Email:FromName"] + " Portfolio API";
                     document.Info.Version = "v1";
-                    document.Info.Description = "Public API supporting the " + configuration["AWS:SES:FromName"] + " developer portfolio.";
+                    document.Info.Description = "Public API supporting the " + configuration["Email:FromName"] + " developer portfolio.";
 
                     var serverUrl = configuration["OpenApi:ServerUrl"];
 

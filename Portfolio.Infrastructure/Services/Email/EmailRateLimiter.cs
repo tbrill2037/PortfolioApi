@@ -1,5 +1,7 @@
 ﻿using System.Threading.RateLimiting;
+using Microsoft.Extensions.Options;
 using Portfolio.Application.Common.Interfaces.Email;
+using Portfolio.Infra.Email.Configuration;
 
 namespace Portfolio.Infra.Services.Email;
 
@@ -10,17 +12,20 @@ public sealed class EmailRateLimiter : IEmailRateLimiter
 {
     private readonly RateLimiter _limiter;
 
-    public EmailRateLimiter()
+    public EmailRateLimiter(IOptions<EmailProcessingOptions> options)
     {
+        var maxEmailsPerSecond = options.Value.ApplicationMaxEmailsPerSecond;
+        var rateLimitQueueLimit = options.Value.ApplicationRateLimitQueueLimit;
+
         _limiter =
             new TokenBucketRateLimiter(
                 new TokenBucketRateLimiterOptions
                 {
-                    TokenLimit = 7,
-                    TokensPerPeriod = 7,
+                    TokenLimit = maxEmailsPerSecond,
+                    TokensPerPeriod = maxEmailsPerSecond,
                     ReplenishmentPeriod = TimeSpan.FromSeconds(1),
                     AutoReplenishment = true,
-                    QueueLimit = 1000,
+                    QueueLimit = rateLimitQueueLimit,
                     QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                 });
     }

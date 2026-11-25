@@ -29,9 +29,9 @@ public sealed class EmailEventRepository : IEmailEventRepository
         {
             Id = Guid.NewGuid(),
             EmailMessageId = email.Id,
-            SesMessageId = emailEvent.SesEvent.Mail.MessageId,
-            SnsMessageId = emailEvent.SnsMessageId,
-            TopicArn = emailEvent.TopicArn,
+            ProviderMessageId = emailEvent.ProviderMessageId,
+            TransportMessageId = emailEvent.TransportMessageId,
+            TransportTopic = emailEvent.TransportTopic,
             EventType = eventType,
             PayloadJson = emailEvent.RawPayload,
             ReceivedUtc = emailEvent.ReceivedUtc,
@@ -41,10 +41,13 @@ public sealed class EmailEventRepository : IEmailEventRepository
         await _dbContext.EmailEvents.AddAsync(entity, cancellationToken);
     }
 
-    public Task<bool> ExistsAsync(string sesMessageId, EmailEventType eventType, CancellationToken cancellationToken)
+    public Task<bool> ExistsAsync(
+        string providerMessageId,
+        EmailEventType eventType,
+        CancellationToken cancellationToken)
     {
         return _dbContext.EmailEvents.AnyAsync(
-            x => x.SesMessageId == sesMessageId && x.EventType == eventType,
+            x => x.ProviderMessageId == providerMessageId && x.EventType == eventType,
             cancellationToken);
     }
 }

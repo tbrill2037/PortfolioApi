@@ -7,8 +7,8 @@ namespace Portfolio.Application.Common.Exceptions;
 /// </summary>
 public sealed class EmailNotFoundException : NotFoundException
 {
-    public EmailNotFoundException(string sesMessageId)
-        : base(nameof(EmailMessage), sesMessageId)
+    public EmailNotFoundException(string providerMessageId)
+        : base(nameof(EmailMessage), providerMessageId)
     {
     }
 }

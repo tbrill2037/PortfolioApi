@@ -8,12 +8,12 @@ public static class LoggingProperties
     public const string Operation = nameof(Operation);
     public const string EmailTemplateType = nameof(EmailTemplateType);
     public const string EmailEventType = nameof(EmailEventType);
-    public const string MessageId = nameof(MessageId);
+    public const string EmailMessageId = nameof(EmailMessageId);
     public const string CorrelationId = nameof(CorrelationId);
     public const string EmailId = nameof(EmailId);
     public const string CampaignId = nameof(CampaignId);
-    public const string SesMessageId = nameof(SesMessageId);
-    public const string AwsRequestId = nameof(AwsRequestId);
+    public const string ProviderMessageId = nameof(ProviderMessageId);
+    public const string ProviderRequestId = nameof(ProviderRequestId);
     public const string Worker = nameof(Worker);
     public const string ReceiveCount = nameof(ReceiveCount);
     public const string BatchSize = nameof(BatchSize);
@@ -25,9 +25,8 @@ public static class LoggingProperties
     public const string MessageAge = nameof(MessageAge);
     public const string RequestId = nameof(RequestId);
     public const string OutboxId = nameof(OutboxId);
-    public const string SqsMessageId = nameof(SqsMessageId);
-    public const string SnsMessageId = nameof(SnsMessageId);
-    public const string SesReceivedUtc = nameof(SesReceivedUtc);
+    public const string QueueMessageId = nameof(QueueMessageId);
+    public const string ProviderReceivedUtc = nameof(ProviderReceivedUtc);
     public const string OutboxMessageId = nameof(OutboxMessageId);
     public const string TriggerType = nameof(TriggerType);
 }

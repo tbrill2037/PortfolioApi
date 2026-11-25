@@ -24,11 +24,10 @@ public sealed class EmailRepository : IEmailRepository
         await _dbContext.EmailMessages.AddAsync(email, cancellationToken);
     }
 
-    public async Task<EmailMessageEntity?> GetBySesMessageIdAsync(string sesMessageId, CancellationToken cancellationToken)
+    public async Task<EmailMessageEntity?> GetByProviderMessageIdAsync(string providerMessageId, CancellationToken cancellationToken)
     {
         return await _dbContext.EmailMessages
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.SesMessageId == sesMessageId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.ProviderMessageId == providerMessageId, cancellationToken);
     }
 
     public async Task<ProcessingLockResult> TryAcquireProcessingLockAsync(
@@ -105,7 +104,7 @@ public sealed class EmailRepository : IEmailRepository
                 cancellationToken);
     }
 
-    public async Task<bool> MarkSentAsync(Guid emailId, Guid lockToken, string sesMessageId, CancellationToken cancellationToken)
+    public async Task<bool> MarkSentAsync(Guid emailId, Guid lockToken, string providerMessageId, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
 
@@ -115,7 +114,7 @@ public sealed class EmailRepository : IEmailRepository
             .ExecuteUpdateAsync(
                 setters => setters
                     .SetProperty(e => e.Status, EmailStatus.Sent)
-                    .SetProperty(e => e.SesMessageId, sesMessageId)
+                    .SetProperty(e => e.ProviderMessageId, providerMessageId)
                     .SetProperty(e => e.SentUtc, now)
                     .SetProperty(e => e.ErrorMessage, (string?)null)
                     .SetProperty(e => e.LastErrorUtc, (DateTime?)null)

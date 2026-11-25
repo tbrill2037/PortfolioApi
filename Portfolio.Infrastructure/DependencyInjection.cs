@@ -10,7 +10,7 @@ using Portfolio.Application.Common.Interfaces.Messaging;
 using Portfolio.Domain.Repositories.Command.Base;
 using Portfolio.Domain.Repositories.Query.Base;
 using Portfolio.Infra.AWS;
-using Portfolio.Infra.AWS.Configuration;
+using Portfolio.Infra.Configuration;
 using Portfolio.Infra.Data;
 using Portfolio.Infra.Data.Configuration;
 using Portfolio.Infra.Email;

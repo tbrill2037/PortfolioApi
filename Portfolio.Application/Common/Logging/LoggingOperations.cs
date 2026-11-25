@@ -8,6 +8,6 @@ public static class LoggingOperations
     public const string QueueEmail = nameof(QueueEmail);
     public const string ProcessEmail = nameof(ProcessEmail);
     public const string ProcessDeadLetter = nameof(ProcessDeadLetter);
-    public const string ProcessSesEvent = nameof(ProcessSesEvent);
+    public const string ProcessEmailEvent = nameof(ProcessEmailEvent);
     public const string SendEmail = nameof(SendEmail);
 }

@@ -9,7 +9,7 @@ using System.Diagnostics;
 namespace Portfolio.Infra.Services.Email;
 
 /// <summary>
-/// Processes email messages through composition, throttling, SES delivery, and status tracking.
+/// Processes email messages through composition, throttling, provider delivery, and status tracking.
 /// </summary>
 public sealed class EmailProcessor : IEmailProcessor
 {
@@ -18,7 +18,7 @@ public sealed class EmailProcessor : IEmailProcessor
     private readonly IEmailSender _sender;
     private readonly IEmailQuotaService _quotaService;
     private readonly IEmailRateLimiter _rateLimiter;
-    private readonly ISesRateLimiter _sesRateLimiter;
+    private readonly IEmailProviderRateLimiter _providerRateLimiter;
     private readonly ILogger<EmailProcessor> _logger;
 
     private static readonly TimeSpan ProcessingLockDuration = TimeSpan.FromMinutes(5);
@@ -29,7 +29,7 @@ public sealed class EmailProcessor : IEmailProcessor
         IEmailSender sender,
         IEmailQuotaService quotaService,
         IEmailRateLimiter rateLimiter,
-        ISesRateLimiter sesRateLimiter,
+        IEmailProviderRateLimiter providerRateLimiter,
         ILogger<EmailProcessor> logger)
     {
         _emailRepository = emailRepository;
@@ -37,7 +37,7 @@ public sealed class EmailProcessor : IEmailProcessor
         _sender = sender;
         _quotaService = quotaService;
         _rateLimiter = rateLimiter;
-        _sesRateLimiter = sesRateLimiter;
+        _providerRateLimiter = providerRateLimiter;
         _logger = logger;
     }
 
@@ -46,7 +46,6 @@ public sealed class EmailProcessor : IEmailProcessor
     /// </summary>
     public async Task<EmailProcessResultModel> ProcessAsync(
         EmailMessage email,
-        int sqsReceiveCount,
         CancellationToken cancellationToken)
     {
         var stopwatch = Stopwatch.StartNew();
@@ -123,9 +122,9 @@ public sealed class EmailProcessor : IEmailProcessor
 
             await _quotaService.CheckAsync(cancellationToken);
             await _rateLimiter.WaitAsync(cancellationToken);
-            await _sesRateLimiter.WaitAsync(cancellationToken);
+            await _providerRateLimiter.WaitAsync(cancellationToken);
 
-            var sesMessageId = await _sender.SendAsync(
+            var providerMessageId = await _sender.SendAsync(
                 email,
                 content.HtmlBody,
                 content.TextBody,
@@ -134,7 +133,7 @@ public sealed class EmailProcessor : IEmailProcessor
             var sent = await _emailRepository.MarkSentAsync(
                 email.Id,
                 lockToken,
-                sesMessageId,
+                providerMessageId,
                 cancellationToken);
 
             if (!sent)
@@ -144,16 +143,16 @@ public sealed class EmailProcessor : IEmailProcessor
             }
 
             _logger.LogInformation(
-                "{EventName} | Email sent successfully. EmailId={EmailId}, SesMessageId={SesMessageId}",
+                "{EventName} | Email sent successfully. EmailId={EmailId}, ProviderMessageId={ProviderMessageId}",
                 EmailLogEvents.Processor.Sent,
                 email.Id,
-                sesMessageId);
+                providerMessageId);
 
             return new EmailProcessResultModel
             {
                 Result = EmailProcessResult.Sent,
                 CorrelationId = email.CorrelationId,
-                SesMessageId = sesMessageId
+                ProviderMessageId = providerMessageId
             };
         }
         catch (EmailTemplateNotFoundException ex)
@@ -197,6 +196,15 @@ public sealed class EmailProcessor : IEmailProcessor
                 Result = EmailProcessResult.PermanentFailure,
                 CorrelationId = email.CorrelationId
             };
+        }
+        catch (OperationCanceledException)
+        {
+            await _emailRepository.ReleaseProcessingLockAsync(
+                email.Id,
+                lockToken,
+                CancellationToken.None);
+
+            throw;
         }
         catch (HttpRequestException ex)
         {

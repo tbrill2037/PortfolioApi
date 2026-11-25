@@ -29,9 +29,9 @@ public static class EmailResourceFactory
     }
 
     /// <summary>
-    /// Creates an S3-backed email resource definition.
+    /// Creates an externally stored email resource definition.
     /// </summary>
-    public static EmailResource CreateS3(
+    public static EmailResource CreateExternal(
         string fileName,
         string contentType,
         string key,
@@ -43,7 +43,7 @@ public static class EmailResourceFactory
             FileName = fileName,
             ContentType = contentType,
             ResourceKey = key,
-            Type = EmailResourceType.S3,
+            Type = EmailResourceType.External,
             ContentId = contentId,
             IsInline = isInline
         };
