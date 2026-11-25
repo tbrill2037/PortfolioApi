@@ -3,6 +3,11 @@
        EMAIL CLIENT RESETS
        ========================================================= */
 
+    :root {
+        color-scheme: light dark;
+        supported-color-schemes: light dark;
+    }
+
     html,
     body {
         width: 100% !important;
@@ -399,31 +404,40 @@
        DARK MODE
        ========================================================= */
 
+
+    /* =========================================================
+   DARK MODE
+   ========================================================= */
+
     @media (prefers-color-scheme: dark) {
+
         body,
+        #body,
+        .email-article,
         .email-body {
-            background-color: #000000 !important;
-            color: #ffffff !important;
+            background-color: #0f172a !important;
+            color: #e2e8f0 !important;
         }
 
         .email-container,
         .email-header,
         .email-content,
-        .email-footer,
-        .content-panel {
-            background-color: #000000 !important;
+        .email-footer {
+            background-color: #0f172a !important;
         }
 
         .email-container {
-            border-color: #27272a !important;
+            border-color: #334155 !important;
         }
 
-        .email-header {
-            border-bottom-color: #27272a !important;
-        }
-
+        .email-header,
         .email-footer {
-            border-top-color: #27272a !important;
+            border-color: #334155 !important;
+        }
+
+        .brand-bar {
+            background-color: #0EA5E9 !important;
+            background-image: linear-gradient( 90deg, #0EA5E9 0%, #38BDF8 45%, #8B5CF6 100% ) !important;
         }
 
         .brand-name,
@@ -431,7 +445,7 @@
         .email-content h2,
         .email-content h3,
         .footer-brand {
-            color: #ffffff !important;
+            color: #f8fafc !important;
         }
 
         .brand-portfolio,
@@ -442,42 +456,37 @@
         }
 
         .brand-studio {
-            color: #8B5CF6 !important;
+            color: #A78BFA !important;
         }
 
         .brand-tagline,
         .intro-text,
-        .email-content p {
+        .email-content p,
+        .footer-copy {
             color: #cbd5e1 !important;
         }
 
         .content-panel {
-            border-color: #27272a !important;
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
             border-left-color: #38BDF8 !important;
         }
 
-        .content-label {
+        .content-label,
+        .footer-disclaimer {
             color: #94a3b8 !important;
         }
 
         .content-value,
         .message-text {
-            color: #f8fafc !important;
+            color: #f1f5f9 !important;
         }
 
         .button-cell,
         .button {
             background-color: #0EA5E9 !important;
-            border-color: #38BDF8 !important;
+            border-color: #0EA5E9 !important;
             color: #ffffff !important;
-        }
-
-        .footer-copy {
-            color: #cbd5e1 !important;
-        }
-
-        .footer-disclaimer {
-            color: #94a3b8 !important;
         }
     }
 

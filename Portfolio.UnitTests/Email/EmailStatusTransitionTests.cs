@@ -134,4 +134,47 @@ public class EmailStatusTransitionTests
 
         result.Should().Be(expected);
     }
+
+    [Theory]
+    [InlineData(EmailStatus.Pending, true)]
+    [InlineData(EmailStatus.Processing, true)]
+    [InlineData(EmailStatus.Sent, false)]
+    public void Reject_ShouldOnlyAllowPendingOrProcessing(
+    EmailStatus status,
+    bool expected)
+    {
+        var result = EmailStatusTransitionValidator.CanTransition(
+            status,
+            EmailEventType.Reject);
+
+        result.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(EmailStatus.DeliveryDelay, true)]
+    [InlineData(EmailStatus.Sent, false)]
+    public void DeliveryDelay_ShouldOnlyAllowDeliveryDelay(
+        EmailStatus status,
+        bool expected)
+    {
+        var result = EmailStatusTransitionValidator.CanTransition(
+            status,
+            EmailEventType.DeliveryDelay);
+
+        result.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(EmailStatus.Subscription, true)]
+    [InlineData(EmailStatus.Sent, false)]
+    public void Subscription_ShouldOnlyAllowSubscription(
+        EmailStatus status,
+        bool expected)
+    {
+        var result = EmailStatusTransitionValidator.CanTransition(
+            status,
+            EmailEventType.Subscription);
+
+        result.Should().Be(expected);
+    }
 }

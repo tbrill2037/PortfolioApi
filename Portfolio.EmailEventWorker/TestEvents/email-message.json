@@ -3,7 +3,11 @@
     {
       "messageId": "sqs-test-001",
       "receiptHandle": "test-receipt",
-      "body": "{\"SesMessageId\":\"0100019f82480dad-aa96d522-02b4-4436-a74b-dd5ed3eddbd7-000000\",\"EventType\":\"Open\",\"RawPayload\":\"{\\\"notificationType\\\":\\\"Delivery\\\",\\\"mail\\\":{\\\"messageId\\\":\\\"ses-test-001\\\"}}\"}",
+      "body": {
+        "ProviderMessageId": "0100019f82480dad-aa96d522-02b4-4436-a74b-dd5ed3eddbd7-000000",
+        "EventType": "Open",
+        "RawPayload": "{\"notificationType\":\"Delivery\",\"mail\":{\"messageId\":\"provider-message-1\"}}"
+      },
       "attributes": {
         "ApproximateReceiveCount": "1",
         "SentTimestamp": "1710000000000",
