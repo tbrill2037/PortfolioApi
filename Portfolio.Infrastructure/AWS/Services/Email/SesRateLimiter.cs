@@ -3,12 +3,12 @@ using Portfolio.Infra.AWS.Configuration;
 using Microsoft.Extensions.Options;
 using System.Threading.RateLimiting;
 
-namespace Portfolio.Infra.Services.Email;
+namespace Portfolio.Infra.AWS.Services.Email;
 
 /// <summary>
 /// Provides rate limiting for Amazon SES send operations.
 /// </summary>
-public sealed class SesRateLimiter : ISesRateLimiter
+public sealed class SesRateLimiter : IEmailProviderRateLimiter
 {
     private readonly RateLimiter _limiter;
 
@@ -21,7 +21,7 @@ public sealed class SesRateLimiter : ISesRateLimiter
                 TokensPerPeriod = options.Value.MaxEmailsPerSecond,
                 ReplenishmentPeriod = TimeSpan.FromSeconds(1),
                 AutoReplenishment = true,
-                QueueLimit = 1000,
+                QueueLimit = options.Value.RateLimitQueueLimit,
                 QueueProcessingOrder = QueueProcessingOrder.OldestFirst
             });
     }

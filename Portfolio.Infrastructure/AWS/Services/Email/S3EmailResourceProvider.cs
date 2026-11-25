@@ -6,7 +6,7 @@ using Portfolio.Application.Common.Models.Email;
 using Portfolio.Domain.Enums.Email;
 using Portfolio.Infra.AWS.Configuration;
 
-namespace Portfolio.Infra.Services.Email.Resources;
+namespace Portfolio.Infra.AWS.Services.Email;
 
 /// <summary>
 /// Provides access to email resources stored in Amazon S3.
@@ -22,7 +22,7 @@ public sealed class S3EmailResourceProvider : IEmailResourceProvider
         _options = options.Value;
     }
 
-    public EmailResourceType ResourceType => EmailResourceType.S3;
+    public EmailResourceType ResourceType => EmailResourceType.External;
 
     /// <summary>
     /// Loads an email resource from Amazon S3.

@@ -7,11 +7,11 @@ public sealed class LambdaOptions
 {
     public const string SectionName = "AWS:Lambda";
 
-    public required string DevelopmentFallbackTime { get; init; } = "00:01:00";
-    public required string EmailOutboxProcessingBuffer { get; init; } = "00:00:10";
-    public required string EmailProcessingBuffer { get; init; } = "00:00:30";
-    public required string EventProcessingBuffer { get; init; } = "00:00:10";
-    public required string DlqProcessingBuffer { get; init; } = "00:00:10";
+    public required string DevelopmentFallbackTime { get; init; }
+    public required string EmailOutboxProcessingBuffer { get; init; }
+    public required string EmailProcessingBuffer { get; init; }
+    public required string EventProcessingBuffer { get; init; }
+    public required string DlqProcessingBuffer { get; init; }
 
     public TimeSpan DevelopmentFallback =>
         TimeSpan.Parse(DevelopmentFallbackTime);
