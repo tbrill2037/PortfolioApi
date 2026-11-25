@@ -176,18 +176,18 @@ namespace Portfolio.Infra.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("ReceiveCount")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("SqsMessageId")
+                    b.Property<string>("QueueMessageId")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("ReceiveCount")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EmailMessageId");
 
-                    b.HasIndex("SqsMessageId")
+                    b.HasIndex("QueueMessageId")
                         .IsUnique();
 
                     b.ToTable("EmailDeadLetters");
@@ -212,24 +212,24 @@ namespace Portfolio.Infra.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("ReceivedUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("SesMessageId")
+                    b.Property<string>("ProviderMessageId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("SnsMessageId")
+                    b.Property<DateTime>("ReceivedUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TransportMessageId")
                         .HasColumnType("text");
 
-                    b.Property<string>("TopicArn")
+                    b.Property<string>("TransportTopic")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EmailMessageId");
 
-                    b.HasIndex("SesMessageId", "EventType")
+                    b.HasIndex("ProviderMessageId", "EventType")
                         .IsUnique();
 
                     b.ToTable("EmailEvents");
@@ -271,6 +271,9 @@ namespace Portfolio.Infra.Migrations
                     b.Property<DateTime?>("ProcessingUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("ProviderMessageId")
+                        .HasColumnType("text");
+
                     b.Property<string>("Recipient")
                         .IsRequired()
                         .HasColumnType("text");
@@ -293,9 +296,6 @@ namespace Portfolio.Infra.Migrations
                     b.Property<DateTime?>("SentUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("SesMessageId")
-                        .HasColumnType("text");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -314,9 +314,9 @@ namespace Portfolio.Infra.Migrations
 
                     b.HasIndex("CorrelationId");
 
-                    b.HasIndex("SesMessageId")
+                    b.HasIndex("ProviderMessageId")
                         .IsUnique()
-                        .HasFilter("\"SesMessageId\" IS NOT NULL");
+                        .HasFilter("\"ProviderMessageId\" IS NOT NULL");
 
                     b.HasIndex("Status", "LastAttemptUtc");
 
