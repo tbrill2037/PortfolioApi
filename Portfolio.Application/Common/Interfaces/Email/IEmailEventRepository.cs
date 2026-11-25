@@ -25,9 +25,12 @@ public interface IEmailEventRepository
     /// <summary>
     /// Determines whether an email event has already been recorded.
     /// </summary>
-    /// <param name="sesMessageId">The SES message identifier.</param>
+    /// <param name="providerMessageId">The email provider's message identifier.</param>
     /// <param name="eventType">The type of email event.</param>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
     /// <returns><see langword="true"/> if the event exists; otherwise, <see langword="false"/>.</returns>
-    Task<bool> ExistsAsync(string sesMessageId, EmailEventType eventType, CancellationToken cancellationToken);
+    Task<bool> ExistsAsync(
+        string providerMessageId,
+        EmailEventType eventType,
+        CancellationToken cancellationToken);
 }

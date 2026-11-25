@@ -12,7 +12,7 @@ public enum EmailStatus
     Retrying = 3,
 
     /// <summary>
-    /// SES accepted the email request.
+    /// The email provider accepted the email request.
     /// </summary>
     Sent = 4,
 
@@ -24,42 +24,42 @@ public enum EmailStatus
     Rejected = 6,
 
     /// <summary>
-    /// SES delivery event received.
+    /// Email delivery event received.
     /// </summary>
     Delivered = 7,
 
     /// <summary>
-    /// SES bounce event received.
+    /// Email bounce event received.
     /// </summary>
     Bounced = 8,
 
     /// <summary>
-    /// SES complaint event received.
+    /// Email complaint event received.
     /// </summary>
     Complained = 9,
 
     /// <summary>
-    /// SES open event received.
+    /// Email open event received.
     /// </summary>
     Opened = 10,
 
     /// <summary>
-    /// SES click event received.
+    /// Email click event received.
     /// </summary>
     Clicked = 11,
 
     /// <summary>
-    /// SES delivery delay event received.
+    /// Email delivery delay event received.
     /// </summary>
     DeliveryDelay = 12,
 
     /// <summary>
-    /// SES subscription event received.
+    /// Email subscription event received.
     /// </summary>
     Subscription = 13,
 
     /// <summary>
-    /// SQS retries exhausted.
+    /// Queue retries exhausted.
     /// </summary>
     DeadLettered = 14
 }

@@ -29,7 +29,7 @@ public sealed class EmailMessageEntity
 
     public EmailStatus Status { get; set; }
 
-    public string? SesMessageId { get; set; }
+    public string? ProviderMessageId { get; set; }
 
     public string? ErrorMessage { get; set; }
 

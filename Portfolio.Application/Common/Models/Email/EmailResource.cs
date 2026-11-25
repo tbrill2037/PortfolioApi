@@ -12,10 +12,7 @@ public sealed class EmailResource
     public required string ContentType { get; init; }
 
     /// <summary>
-    /// Where the resource is stored.
-    /// Examples:
-    /// embedded:Portfolio.Infra.EmailAssets.logo.png
-    /// s3:emails/12345/resume.pdf
+    /// The identifier used by the registered provider to locate the resource.
     /// </summary>
     public required string ResourceKey { get; init; }
 
