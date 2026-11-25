@@ -7,8 +7,9 @@ using Portfolio.Application.Common.Interfaces.Email;
 using Portfolio.Application.Common.Logging;
 using Portfolio.Application.Common.Models.Email;
 using Portfolio.Infra.AWS.Configuration;
+using Portfolio.Infra.Email.Configuration;
 
-namespace Portfolio.Infra.Services.Email;
+namespace Portfolio.Infra.AWS.Services.Email;
 
 /// <summary>
 /// Sends composed email messages through Amazon SES using raw MIME content.
@@ -16,18 +17,21 @@ namespace Portfolio.Infra.Services.Email;
 public sealed class SesEmailSender : IEmailSender
 {
     private readonly IAmazonSimpleEmailServiceV2 _ses;
-    private readonly SesOptions _options;
+    private readonly SesOptions _sesOptions;
+    private readonly EmailOptions _emailOptions;
     private readonly ILogger<SesEmailSender> _logger;
     private readonly IEmailResourceResolver _resourceResolver;
 
     public SesEmailSender(
         IAmazonSimpleEmailServiceV2 ses,
-        IOptions<SesOptions> options,
+        IOptions<SesOptions> sesOptions,
+        IOptions<EmailOptions> emailOptions,
         ILogger<SesEmailSender> logger,
         IEmailResourceResolver resourceResolver)
     {
         _ses = ses;
-        _options = options.Value;
+        _sesOptions = sesOptions.Value;
+        _emailOptions = emailOptions.Value;
         _logger = logger;
         _resourceResolver = resourceResolver;
     }
@@ -45,8 +49,11 @@ public sealed class SesEmailSender : IEmailSender
 
         var mimeMessage = new MimeMessage();
 
-        mimeMessage.From.Add(MailboxAddress.Parse(_options.FromEmail));
-        mimeMessage.To.Add(MailboxAddress.Parse(message.RecipientEmail.Address));
+        mimeMessage.From.Add(new MailboxAddress(
+            _emailOptions.FromName,
+            _emailOptions.FromEmail));
+        mimeMessage.To.Add(
+            MailboxAddress.Parse(message.RecipientEmail.Address));
         mimeMessage.Subject = message.Subject;
 
         var bodyBuilder = new BodyBuilder
@@ -116,7 +123,7 @@ public sealed class SesEmailSender : IEmailSender
 
         _logger.LogInformation(
             "{EventName} | Email MIME created. SizeBytes={SizeBytes}, ResourceCount={ResourceCount}, InlineResourceCount={InlineResourceCount}",
-            EmailLogEvents.Ses.EmailMimeCreated,
+            EmailLogEvents.Provider.EmailMimeCreated,
             memoryStream.Length,
             message.Resources.Count,
             message.Resources.Count(x => x.IsInline));
@@ -128,7 +135,8 @@ public sealed class SesEmailSender : IEmailSender
 
         var request = new SendEmailRequest
         {
-            FromEmailAddress = _options.FromEmail,
+            FromEmailAddress = _emailOptions.FromEmail,
+            ConfigurationSetName = _sesOptions.ConfigurationSet,
             Content = new Amazon.SimpleEmailV2.Model.EmailContent
             {
                 Raw = new RawMessage
@@ -139,8 +147,8 @@ public sealed class SesEmailSender : IEmailSender
         };
 
         _logger.LogInformation(
-            "{EventName} | Sending raw MIME email through SES. Recipient={Recipient}, TemplateType={TemplateType}, MimeSizeBytes={MimeSizeBytes}",
-            EmailLogEvents.Ses.SesSendStarted,
+            "{EventName} | Sending raw MIME email through provider. Recipient={Recipient}, TemplateType={TemplateType}, MimeSizeBytes={MimeSizeBytes}",
+            EmailLogEvents.Provider.ProviderSendStarted,
             message.RecipientEmail.Address,
             message.TemplateType,
             memoryStream.Length);
@@ -152,8 +160,8 @@ public sealed class SesEmailSender : IEmailSender
                 cancellationToken);
 
             _logger.LogInformation(
-                "{EventName} | SES accepted email. MessageId={MessageId}",
-                EmailLogEvents.Ses.EmailAccepted,
+                "{EventName} | Email accepted. MessageId={MessageId}",
+                EmailLogEvents.Provider.EmailAccepted,
                 response.MessageId);
 
             return response.MessageId;
@@ -161,8 +169,8 @@ public sealed class SesEmailSender : IEmailSender
         catch (OperationCanceledException)
         {
             _logger.LogWarning(
-                "{EventName} | SES email send cancelled.",
-                EmailLogEvents.Ses.SendCancelled);
+                "{EventName} | Email send cancelled.",
+                EmailLogEvents.Provider.SendCancelled);
 
             throw;
         }
@@ -170,8 +178,8 @@ public sealed class SesEmailSender : IEmailSender
         {
             _logger.LogError(
                 ex,
-                "{EventName} | SES rejected email. ErrorCode={ErrorCode}",
-                EmailLogEvents.Ses.SendFailed,
+                "{EventName} | Email rejected. ErrorCode={ErrorCode}",
+                EmailLogEvents.Provider.SendFailed,
                 ex.ErrorCode);
 
             throw;
@@ -180,8 +188,8 @@ public sealed class SesEmailSender : IEmailSender
         {
             _logger.LogError(
                 ex,
-                "{EventName} | Unexpected SES failure.",
-                EmailLogEvents.Ses.SendFailed);
+                "{EventName} | Unexpected email sending failure.",
+                EmailLogEvents.Provider.SendFailed);
 
             throw;
         }

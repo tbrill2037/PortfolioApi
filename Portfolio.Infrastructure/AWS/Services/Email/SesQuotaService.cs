@@ -6,21 +6,21 @@ using Portfolio.Application.Common.Interfaces.Email;
 using Portfolio.Application.Common.Logging;
 using Portfolio.Infra.AWS.Configuration;
 
-namespace Portfolio.Infra.Services.Email;
+namespace Portfolio.Infra.AWS.Services.Email;
 
 /// <summary>
 /// Validates Amazon SES sending quota availability before processing emails.
 /// </summary>
-public sealed class EmailQuotaService : IEmailQuotaService
+public sealed class SesQuotaService : IEmailQuotaService
 {
     private readonly IAmazonSimpleEmailServiceV2 _ses;
     private readonly SesOptions _sesOptions;
-    private readonly ILogger<EmailQuotaService> _logger;
+    private readonly ILogger<SesQuotaService> _logger;
 
-    public EmailQuotaService(
+    public SesQuotaService(
         IAmazonSimpleEmailServiceV2 ses,
         IOptions<SesOptions> sesOptions,
-        ILogger<EmailQuotaService> logger)
+        ILogger<SesQuotaService> logger)
     {
         _ses = ses;
         _sesOptions = sesOptions.Value;
