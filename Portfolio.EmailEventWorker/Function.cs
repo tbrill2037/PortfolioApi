@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Portfolio.Application.Common.Exceptions;
 using Portfolio.Application.Common.Interfaces.Email;
-using Portfolio.Application.Common.Interfaces.Lambda;
+using Portfolio.Application.Common.Interfaces.Execution;
 using Portfolio.Application.Common.Logging;
 using Portfolio.Application.Common.AWS;
 using Portfolio.Infra.AWS.Configuration;
@@ -30,7 +30,7 @@ public sealed class Function
     }
 
     /// <summary>
-    /// Processes SES email events received from the SQS queue.
+    /// Processes email events received from the SQS queue.
     /// </summary>
     public async Task<SQSBatchResponse> FunctionHandler(SQSEvent sqsEvent, ILambdaContext context)
     {
@@ -39,8 +39,8 @@ public sealed class Function
         var sqsOptions = serviceProvider.GetRequiredService<IOptions<SqsOptions>>().Value;
         var lambdaOptions = serviceProvider.GetRequiredService<IOptions<LambdaOptions>>().Value;
         var logger = serviceProvider.GetRequiredService<ILogger<Function>>();
-        var timeoutProvider = serviceProvider.GetRequiredService<ILambdaExecutionTimeoutProvider>();
-        var sesEventParser = serviceProvider.GetRequiredService<ISesEventParser>();
+        var timeoutProvider = serviceProvider.GetRequiredService<IExecutionTimeoutProvider>();
+        var emailEventParser = serviceProvider.GetRequiredService<IEmailEventParser>();
 
         var queueName = AwsResourceParser.GetQueueNameFromUrl(sqsOptions.EmailEventQueueUrl);
         var buffer = lambdaOptions.EmailEventProcessorBuffer;
@@ -51,7 +51,7 @@ public sealed class Function
             [LoggingProperties.FunctionName] = context.FunctionName,
             [LoggingProperties.QueueName] = queueName,
             [LoggingProperties.QueueType] = QueueTypes.EmailEvents,
-            [LoggingProperties.AwsRequestId] = context.AwsRequestId,
+            [LoggingProperties.ProviderRequestId] = context.AwsRequestId,
             [LoggingProperties.BatchSize] = sqsEvent?.Records?.Count ?? 0,
         });
 
@@ -82,20 +82,22 @@ public sealed class Function
             {
                 using var messageScope = logger.BeginScope(new Dictionary<string, object?>
                 {
-                    [LoggingProperties.MessageId] = record.MessageId,
+                    [LoggingProperties.QueueMessageId] = record.MessageId,
                     [LoggingProperties.ReceiveCount] = receiveCount,
                     [LoggingProperties.SentTimestamp] = sentTimestamp,
                     [LoggingProperties.FirstReceiveTimestamp] = SqsMessageHelper.GetFirstReceiveTimestamp(record),
                     [LoggingProperties.MessageAge] = messageAge,
                 });
 
-                var emailEvent = sesEventParser.Parse(record.Body);
+                var emailEvent = emailEventParser.Parse(record.Body);
 
                 logger.LogInformation(
-                    "{EventName} | SES event received.",
+                    "{EventName} | Email event received.",
                     EmailLogEvents.Worker.MessageReceived);
 
-                using var timeout = timeoutProvider.CreateTimeout(context, buffer);
+                using var timeout = timeoutProvider.CreateTimeout(
+                    context.RemainingTime,
+                    buffer);
 
                 if (timeout is null)
                 {
@@ -123,7 +125,7 @@ public sealed class Function
             {
                 logger.LogWarning(
                     ex,
-                    "{EventName} | SES processing cancelled.",
+                    "{EventName} | Email event processing cancelled.",
                     EmailLogEvents.Worker.ProcessingCancelled);
 
                 SqsBatchFailureHelper.AddFailure(failures, record);
@@ -132,7 +134,7 @@ public sealed class Function
             {
                 logger.LogError(
                     ex,
-                    "{EventName} | Invalid SES JSON payload.",
+                    "{EventName} | Invalid email event JSON payload.",
                     EmailLogEvents.Worker.InvalidPayload);
 
                 SqsBatchFailureHelper.AddFailure(failures, record);
@@ -150,7 +152,7 @@ public sealed class Function
             {
                 logger.LogError(
                     ex,
-                    "{EventName} | Unhandled SES processing failure.",
+                    "{EventName} | Unhandled email event processing failure.",
                     EmailLogEvents.Worker.ProcessingFailed);
 
                 SqsBatchFailureHelper.AddFailure(failures, record);

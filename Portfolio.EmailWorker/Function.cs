@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Portfolio.Application.Common.AWS;
 using Portfolio.Application.Common.Interfaces.Email;
-using Portfolio.Application.Common.Interfaces.Lambda;
+using Portfolio.Application.Common.Interfaces.Execution;
 using Portfolio.Application.Common.Logging;
 using Portfolio.Application.Common.Models.Email;
 using Portfolio.Application.Common.Serialization;
@@ -44,7 +44,7 @@ public sealed class Function
         var sqsOptions = serviceProvider.GetRequiredService<IOptions<SqsOptions>>().Value;
         var lambdaOptions = serviceProvider.GetRequiredService<IOptions<LambdaOptions>>().Value;
         var logger = serviceProvider.GetRequiredService<ILogger<Function>>();
-        var timeoutProvider = serviceProvider.GetRequiredService<ILambdaExecutionTimeoutProvider>();
+        var timeoutProvider = serviceProvider.GetRequiredService<IExecutionTimeoutProvider>();
 
         var queueName = AwsResourceParser.GetQueueNameFromUrl(sqsOptions.EmailQueueUrl);
         var buffer = lambdaOptions.EmailProcessorBuffer;
@@ -55,7 +55,7 @@ public sealed class Function
             [LoggingProperties.FunctionName] = context.FunctionName,
             [LoggingProperties.QueueName] = queueName,
             [LoggingProperties.QueueType] = QueueTypes.EmailDispatch,
-            [LoggingProperties.AwsRequestId] = context.AwsRequestId,
+            [LoggingProperties.ProviderRequestId] = context.AwsRequestId,
             [LoggingProperties.BatchSize] = sqsEvent?.Records?.Count ?? 0,
         });
 
@@ -86,7 +86,7 @@ public sealed class Function
             {
                 using var messageScope = logger.BeginScope(new Dictionary<string, object?>
                 {
-                    [LoggingProperties.MessageId] = record.MessageId,
+                    [LoggingProperties.QueueMessageId] = record.MessageId,
                     [LoggingProperties.ReceiveCount] = receiveCount,
                     [LoggingProperties.SentTimestamp] = sentTimestamp,
                     [LoggingProperties.FirstReceiveTimestamp] = SqsMessageHelper.GetFirstReceiveTimestamp(record),
@@ -118,7 +118,9 @@ public sealed class Function
                     "{EventName} | Email message received.",
                     EmailLogEvents.Worker.MessageReceived);
 
-                using var timeout = timeoutProvider.CreateTimeout(context, buffer);
+                using var timeout = timeoutProvider.CreateTimeout(
+                    context.RemainingTime,
+                    buffer);
 
                 if (timeout is null)
                 {
@@ -140,7 +142,7 @@ public sealed class Function
 
                 var processor = scope.ServiceProvider.GetRequiredService<IEmailProcessor>();
 
-                var result = await processor.ProcessAsync(email, receiveCount, timeout.Token);
+                var result = await processor.ProcessAsync(email, timeout.Token);
 
                 HandleProcessingResult(result, email, record, failures, logger);
             }
@@ -201,22 +203,22 @@ public sealed class Function
         {
             case EmailProcessResult.Sent:
                 {
-                    if (!string.IsNullOrWhiteSpace(result.SesMessageId))
+                    if (!string.IsNullOrWhiteSpace(result.ProviderMessageId))
                     {
                         using var resultScope = logger.BeginScope(new Dictionary<string, object>
                         {
-                            [LoggingProperties.SesMessageId] = result.SesMessageId,
+                            [LoggingProperties.ProviderMessageId] = result.ProviderMessageId,
                         });
 
                         logger.LogInformation(
-                            "{EventName} | SES accepted email.",
-                            EmailLogEvents.Worker.SesAccepted);
+                            "{EventName} | Provider accepted email.",
+                            EmailLogEvents.Worker.ProviderAccepted);
                     }
                     else
                     {
                         logger.LogInformation(
-                            "{EventName} | SES accepted email but returned no SES message ID.",
-                            EmailLogEvents.Worker.SesAccepted);
+                            "{EventName} | Provider accepted email but returned no provider message ID.",
+                            EmailLogEvents.Worker.ProviderAccepted);
                     }
 
                     break;

@@ -11,7 +11,7 @@ using Portfolio.Infra.Data;
 namespace Portfolio.Infra.Services.Email;
 
 /// <summary>
-/// Processes Amazon SES email lifecycle events and updates email status records.
+/// Processes email provider lifecycle events and updates email status records.
 /// </summary>
 public sealed class EmailEventProcessor : IEmailEventProcessor
 {
@@ -33,7 +33,7 @@ public sealed class EmailEventProcessor : IEmailEventProcessor
     }
 
     /// <summary>
-    /// Processes an SES event and updates the related email lifecycle state.
+    /// Processes an email provider event and updates the related email lifecycle state.
     /// </summary>
     public async Task ProcessAsync(
         EmailEvent emailEvent,
@@ -41,28 +41,27 @@ public sealed class EmailEventProcessor : IEmailEventProcessor
     {
         ArgumentNullException.ThrowIfNull(emailEvent);
 
-        var sesMessageId = emailEvent.SesEvent.Mail.MessageId;
-        var eventType = MapEventType(emailEvent.SesEvent.EventType);
+        var providerMessageId = emailEvent.ProviderMessageId;
+        var eventType = emailEvent.EventType;
 
         using var scope = _logger.BeginScope(new Dictionary<string, object?>
         {
-            [LoggingProperties.Operation] = LoggingOperations.ProcessSesEvent,
-            [LoggingProperties.SesMessageId] = sesMessageId,
+            [LoggingProperties.Operation] = LoggingOperations.ProcessEmailEvent,
+            [LoggingProperties.ProviderMessageId] = providerMessageId,
             [LoggingProperties.EmailEventType] = eventType,
-            [LoggingProperties.SnsMessageId] = emailEvent.SnsMessageId,
-            [LoggingProperties.SesReceivedUtc] = emailEvent.ReceivedUtc
+            [LoggingProperties.ProviderReceivedUtc] = emailEvent.ReceivedUtc
         });
 
         var alreadyProcessed = await _eventRepository.ExistsAsync(
-            sesMessageId,
+            providerMessageId,
             eventType,
             cancellationToken);
 
         if (alreadyProcessed)
         {
             _logger.LogInformation(
-                "{EventName} | SES event already processed.",
-                EmailLogEvents.Ses.AlreadyProcessed);
+                "{EventName} | Provider event already processed.",
+                EmailLogEvents.Provider.EventAlreadyProcessed);
 
             return;
         }
@@ -75,15 +74,15 @@ public sealed class EmailEventProcessor : IEmailEventProcessor
 
             try
             {
-                var email = await _emailRepository.GetBySesMessageIdAsync(
-                    sesMessageId,
+                var email = await _emailRepository.GetByProviderMessageIdAsync(
+                    providerMessageId,
                     cancellationToken);
 
                 if (email is null)
                 {
                     _logger.LogWarning(
-                        "{EventName} | Email record not found. SES event discarded.",
-                        EmailLogEvents.Ses.EventEmailMissing);
+                        "{EventName} | Email record not found. Provider event ignored.",
+                        EmailLogEvents.Provider.EventEmailMissing);
 
                     return;
                 }
@@ -110,7 +109,7 @@ public sealed class EmailEventProcessor : IEmailEventProcessor
                 {
                     _logger.LogInformation(
                         "{EventName} | Email status updated. Previous={PreviousStatus}, Current={CurrentStatus}",
-                        EmailLogEvents.Ses.StatusUpdated,
+                        EmailLogEvents.Provider.StatusUpdated,
                         previousStatus,
                         email.Status);
                 }
@@ -119,24 +118,24 @@ public sealed class EmailEventProcessor : IEmailEventProcessor
                 await transaction.CommitAsync(cancellationToken);
 
                 _logger.LogInformation(
-                    "{EventName} | SES event processed.",
-                    EmailLogEvents.Ses.Processed);
+                    "{EventName} | Provider event processed.",
+                    EmailLogEvents.Provider.EventProcessed);
             }
             catch (DbUpdateException ex)
                 when (IsDuplicateKeyViolation(ex))
             {
                 _logger.LogInformation(
-                    "{EventName} | Duplicate SES event ignored. SesMessageId={SesMessageId}, EventType={EventType}",
-                    EmailLogEvents.Ses.AlreadyProcessed,
-                    sesMessageId,
+                    "{EventName} | Duplicate provider event ignored. ProviderMessageId={ProviderMessageId}, EventType={EventType}",
+                    EmailLogEvents.Provider.EventAlreadyProcessed,
+                    providerMessageId,
                     eventType);
             }
             catch (OperationCanceledException ex)
             {
                 _logger.LogWarning(
                     ex,
-                    "{EventName} | SES processing cancelled.",
-                    EmailLogEvents.Ses.Cancelled);
+                    "{EventName} | Provider processing cancelled.",
+                    EmailLogEvents.Provider.EventCancelled);
 
                 throw;
             }
@@ -144,8 +143,8 @@ public sealed class EmailEventProcessor : IEmailEventProcessor
             {
                 _logger.LogError(
                     ex,
-                    "{EventName} | Failed processing SES event.",
-                    EmailLogEvents.Ses.Failed);
+                    "{EventName} | Failed processing provider event.",
+                    EmailLogEvents.Provider.EventFailed);
 
                 throw;
             }
@@ -174,24 +173,6 @@ public sealed class EmailEventProcessor : IEmailEventProcessor
             EmailEventType.DeliveryDelay => EmailStatus.DeliveryDelay,
             EmailEventType.Subscription => EmailStatus.Subscription,
             _ => email.Status
-        };
-    }
-
-    private static EmailEventType MapEventType(string notificationType)
-    {
-        return notificationType switch
-        {
-            "Send" => EmailEventType.Send,
-            "Delivery" => EmailEventType.Delivery,
-            "Bounce" => EmailEventType.Bounce,
-            "Complaint" => EmailEventType.Complaint,
-            "Reject" => EmailEventType.Reject,
-            "RenderingFailure" => EmailEventType.RenderingFailure,
-            "Open" => EmailEventType.Open,
-            "Click" => EmailEventType.Click,
-            "DeliveryDelay" => EmailEventType.DeliveryDelay,
-            "Subscription" => EmailEventType.Subscription,
-            _ => EmailEventType.Unknown
         };
     }
 

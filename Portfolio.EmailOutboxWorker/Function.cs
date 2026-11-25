@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Portfolio.Application.Common.Interfaces.Email;
-using Portfolio.Application.Common.Interfaces.Lambda;
+using Portfolio.Application.Common.Interfaces.Execution;
 using Portfolio.Application.Common.Logging;
 using Portfolio.Infra.AWS.Configuration;
 using Portfolio.Infra.AWS.Utilities;
@@ -45,7 +45,7 @@ public sealed class Function
         var sqsOptions = serviceProvider.GetRequiredService<IOptions<SqsOptions>>().Value;
         var lambdaOptions = serviceProvider.GetRequiredService<IOptions<LambdaOptions>>().Value;
         var logger = serviceProvider.GetRequiredService<ILogger<Function>>();
-        var timeoutProvider = serviceProvider.GetRequiredService<ILambdaExecutionTimeoutProvider>();
+        var timeoutProvider = serviceProvider.GetRequiredService<IExecutionTimeoutProvider>();
 
         var queueName = AwsResourceParser.GetQueueNameFromUrl(sqsOptions.OutboxQueueUrl);
         var buffer = lambdaOptions.EmailOutboxProcessorBuffer;
@@ -56,7 +56,7 @@ public sealed class Function
             [LoggingProperties.FunctionName] = context.FunctionName,
             [LoggingProperties.QueueName] = queueName,
             [LoggingProperties.QueueType] = QueueTypes.EmailOutbox,
-            [LoggingProperties.AwsRequestId] = context.AwsRequestId,
+            [LoggingProperties.ProviderRequestId] = context.AwsRequestId,
             [LoggingProperties.TriggerType] = triggerType,
         });
 
@@ -64,7 +64,9 @@ public sealed class Function
 
         try
         {
-            using var timeout = timeoutProvider.CreateTimeout(context, buffer);
+            using var timeout = timeoutProvider.CreateTimeout(
+                context.RemainingTime,
+                buffer);
 
             if (timeout is null)
             {

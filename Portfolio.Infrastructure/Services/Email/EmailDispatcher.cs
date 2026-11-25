@@ -4,7 +4,7 @@ using Portfolio.Application.Common.Interfaces.Email;
 using Portfolio.Application.Common.Interfaces.Messaging;
 using Portfolio.Application.Common.Models.Email;
 using Portfolio.Domain.Enums.Email;
-using Portfolio.Infra.AWS.Configuration;
+using Portfolio.Infra.Email.Configuration;
 using Portfolio.Infra.Email.Models;
 
 namespace Portfolio.Infra.Services.Email;
@@ -15,14 +15,14 @@ namespace Portfolio.Infra.Services.Email;
 public sealed class EmailDispatcher : IEmailDispatcher
 {
     private readonly IEmailQueue _queue;
-    private readonly SesOptions _options;
+    private readonly EmailOptions _options;
     private readonly ICorrelationIdGenerator _idGenerator;
     private readonly IEmailCooldownService _cooldownService;
     private readonly IClientIpService _clientIpService;
 
     public EmailDispatcher(
         IEmailQueue queue,
-        IOptions<SesOptions> options,
+        IOptions<EmailOptions> options,
         ICorrelationIdGenerator idGenerator,
         IEmailCooldownService cooldownService,
         IClientIpService clientIpService)

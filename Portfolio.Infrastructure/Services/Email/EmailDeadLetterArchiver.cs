@@ -1,5 +1,4 @@
-﻿using Amazon.Lambda.SQSEvents;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Portfolio.Application.Common.Interfaces.Email;
 using Portfolio.Application.Common.Logging;
@@ -35,7 +34,7 @@ public sealed class EmailDeadLetterArchiver : IEmailDeadLetterArchiver
     /// Archives a failed email message and updates its related email record.
     /// </summary>
     public async Task ArchiveAsync(
-        SQSEvent.SQSMessage message,
+        EmailDeadLetterMessage message,
         EmailMessage? email,
         Exception? exception,
         CancellationToken cancellationToken)
@@ -43,7 +42,7 @@ public sealed class EmailDeadLetterArchiver : IEmailDeadLetterArchiver
         using var scope = _logger.BeginScope(new Dictionary<string, object?>
         {
             [LoggingProperties.Operation] = LoggingOperations.ProcessDeadLetter,
-            [LoggingProperties.MessageId] = message.MessageId,
+            [LoggingProperties.QueueMessageId] = message.QueueMessageId,
             [LoggingProperties.EmailId] = email?.Id,
         });
 
@@ -58,11 +57,11 @@ public sealed class EmailDeadLetterArchiver : IEmailDeadLetterArchiver
         {
             Id = Guid.NewGuid(),
             EmailMessageId = email?.Id,
-            SqsMessageId = message.MessageId,
+            QueueMessageId = message.QueueMessageId,
             Payload = message.Body,
             FailureReason = failureReason,
             ExceptionType = exception?.GetType().FullName,
-            ReceiveCount = GetReceiveCount(message),
+            ReceiveCount = message.ReceiveCount,
             CreatedUtc = DateTime.UtcNow
         };
 
@@ -87,21 +86,8 @@ public sealed class EmailDeadLetterArchiver : IEmailDeadLetterArchiver
         });
 
         _logger.LogWarning(
-            "{EventName} | DLQ message archived. MessageId={MessageId}",
+            "{EventName} | DLQ message archived. QueueMessageId={QueueMessageId}",
             EmailLogEvents.Dlq.DlqArchived,
-            message.MessageId);
-    }
-
-    private static int GetReceiveCount(SQSEvent.SQSMessage message)
-    {
-        if (message.Attributes.TryGetValue(
-                "ApproximateReceiveCount",
-                out var value)
-            && int.TryParse(value, out var count))
-        {
-            return count;
-        }
-
-        return 0;
+            message.QueueMessageId);
     }
 }

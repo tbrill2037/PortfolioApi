@@ -33,10 +33,10 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .HasForeignKey(e => e.EmailMessageId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // SES message IDs identify accepted email requests and are unique.
-            entity.HasIndex(x => x.SesMessageId)
+            // Provider message IDs identify accepted email requests and are unique.
+            entity.HasIndex(x => x.ProviderMessageId)
                 .IsUnique()
-                .HasFilter("\"SesMessageId\" IS NOT NULL");
+                .HasFilter($"\"{nameof(EmailMessageEntity.ProviderMessageId)}\" IS NOT NULL");
 
             // Supports processing lock recovery and worker queries.
             entity.HasIndex(x => new
@@ -57,10 +57,10 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         modelBuilder.Entity<EmailEventEntity>(entity =>
         {
-            // SES may deliver duplicate events. Prevent duplicate event records.
+            // Email provider may deliver duplicate events. Prevent duplicate event records.
             entity.HasIndex(x => new
             {
-                x.SesMessageId,
+                x.ProviderMessageId,
                 x.EventType,
             })
             .IsUnique();
@@ -90,7 +90,7 @@ public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
             entity.HasIndex(x => x.EmailMessageId);
 
-            entity.HasIndex(x => x.SqsMessageId)
+            entity.HasIndex(x => x.QueueMessageId)
                 .IsUnique();
         });
     }

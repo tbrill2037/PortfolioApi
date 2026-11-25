@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Portfolio.Application.Common.AWS;
 using Portfolio.Application.Common.Interfaces.Email;
-using Portfolio.Application.Common.Interfaces.Lambda;
+using Portfolio.Application.Common.Interfaces.Execution;
 using Portfolio.Application.Common.Logging;
 using Portfolio.Application.Common.Models.Email;
 using Portfolio.Application.Common.Serialization;
@@ -53,7 +53,7 @@ public sealed class Function
             .GetRequiredService<ILogger<Function>>();
 
         var timeoutProvider = serviceProvider
-            .GetRequiredService<ILambdaExecutionTimeoutProvider>();
+            .GetRequiredService<IExecutionTimeoutProvider>();
 
         var queueName = AwsResourceParser.GetQueueNameFromUrl(
             sqsOptions.EmailDeadLetterQueueUrl);
@@ -66,7 +66,7 @@ public sealed class Function
             [LoggingProperties.FunctionName] = context.FunctionName,
             [LoggingProperties.QueueName] = queueName,
             [LoggingProperties.QueueType] = QueueTypes.EmailDeadLetter,
-            [LoggingProperties.AwsRequestId] = context.AwsRequestId,
+            [LoggingProperties.ProviderRequestId] = context.AwsRequestId,
             [LoggingProperties.BatchSize] = sqsEvent?.Records?.Count ?? 0,
         });
 
@@ -102,7 +102,7 @@ public sealed class Function
 
                 using var messageScope = logger.BeginScope(new Dictionary<string, object?>
                 {
-                    [LoggingProperties.MessageId] = record.MessageId,
+                    [LoggingProperties.QueueMessageId] = record.MessageId,
                     [LoggingProperties.ReceiveCount] = receiveCount,
                     [LoggingProperties.SentTimestamp] = sentTimestamp,
                     [LoggingProperties.FirstReceiveTimestamp] =
@@ -126,7 +126,10 @@ public sealed class Function
                         EmailLogEvents.Worker.InvalidPayload);
 
                     await archiver.ArchiveAsync(
-                        record,
+                        new EmailDeadLetterMessage(
+                            QueueMessageId: record.MessageId,
+                            Body: record.Body,
+                            ReceiveCount: receiveCount),
                         null,
                         ex,
                         CancellationToken.None);
@@ -141,7 +144,10 @@ public sealed class Function
                         EmailLogEvents.Worker.MissingPayload);
 
                     await archiver.ArchiveAsync(
-                        record,
+                        new EmailDeadLetterMessage(
+                            QueueMessageId: record.MessageId,
+                            Body: record.Body,
+                            ReceiveCount: receiveCount),
                         null,
                         null,
                         CancellationToken.None);
@@ -163,7 +169,7 @@ public sealed class Function
                     receiveCount);
 
                 using var timeout = timeoutProvider.CreateTimeout(
-                    context,
+                    context.RemainingTime,
                     buffer);
 
                 if (timeout is null)
@@ -185,7 +191,10 @@ public sealed class Function
                     timeout.Timeout.TotalSeconds);
 
                 await archiver.ArchiveAsync(
-                    record,
+                    new EmailDeadLetterMessage(
+                        QueueMessageId: record.MessageId,
+                        Body: record.Body,
+                        ReceiveCount: receiveCount),
                     email,
                     null,
                     timeout.Token);

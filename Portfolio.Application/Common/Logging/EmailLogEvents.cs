@@ -26,23 +26,23 @@ public static class EmailLogEvents
         public const string NotFound = "Email.NotFound";
     }
 
-    public static class Ses
+    public static class Provider
     {
         public const string EventEmailMissing = "Email.EventEmailMissing";
-        public const string SesSendStarted = "Email.SesSendStarted";
+        public const string ProviderSendStarted = "Email.ProviderSendStarted";
         public const string EmailAccepted = "Email.EmailAccepted";
         public const string EmailRejected = "Email.EmailRejected";
         public const string SendCancelled = "Email.SendCancelled";
         public const string SendFailed = "Email.SendFailed";
-        public const string ProcessingStarted = "Email.SesProcessingStarted";
-        public const string AlreadyProcessed = "Email.SesAlreadyProcessed";
-        public const string Failed = "Email.SesFailed";
+        public const string EventProcessingStarted = "Email.EventProcessingStarted";
+        public const string EventAlreadyProcessed = "Email.EventAlreadyProcessed";
+        public const string EventFailed = "Email.EventFailed";
         public const string NotFound = "Email.NotFound";
-        public const string UnknownEventType = "Email.SesUnknownEventType";
-        public const string EventIgnored = "Email.SesEventIgnored";
-        public const string Processed = "Email.SesProcessed";
-        public const string Cancelled = "Email.SesCancelled";
-        public const string DatabaseError = "Email.SesDatabaseError";
+        public const string UnknownEventType = "Email.UnknownEventType";
+        public const string EventIgnored = "Email.EventIgnored";
+        public const string EventProcessed = "Email.EventProcessed";
+        public const string EventCancelled = "Email.EventCancelled";
+        public const string EventDatabaseError = "Email.EventDatabaseError";
         public const string StatusUpdated = "Email.StatusUpdated";
         public const string EmailMimeCreated = "Email.EmailMimeCreated";
         public const string EmailMimeMissingBody = "Email.EmailMimeMissingBody";
@@ -56,11 +56,11 @@ public static class EmailLogEvents
         public const string ProcessingCancelled = "Email.ProcessingCancelled";
         public const string ProcessingSucceeded = "Email.ProcessingSucceeded";
         public const string ProcessingTimeoutSelected = "Email.ProcessingTimeoutSelected";
-        public const string LambdaExecutionTimeChecked = "Email.LambdaExecutionTimeChecked";
-        public const string LambdaRemainingTime = "Email.LambdaRemainingTime";
+        public const string ExecutionTimeChecked = "Email.ExecutionTimeChecked";
+        public const string ExecutionRemainingTime = "Email.ExecutionRemainingTime";
         public const string InsufficientRemainingTime = "Email.InsufficientRemainingTime";
         public const string MaxRetryAttemptsExceeded = "Email.MaxRetryAttemptsExceeded";
-        public const string SesAccepted = "Email.SesAccepted";
+        public const string ProviderAccepted = "Email.ProviderAccepted";
         public const string AlreadyProcessed = "Email.AlreadyProcessed";
         public const string UnknownProcessResult = "Email.UnknownProcessResult";
         public const string Locked = "Email.Locked";
@@ -110,9 +110,9 @@ public static class EmailLogEvents
         public const string QuotaExceeded = "Email.QuotaExceeded";
         public const string QuotaLow = "Email.QuotaLow";
         public const string QuotaCheckFailed = "Email.QuotaCheckFailed";
-        public const string StatusChecked = "Email.SesStatusChecked";
-        public const string MonitorCheckFailed = "Email.SesQuotaMonitorCheckFailed";
-        public const string SandboxMode = "Email.SesSandboxMode";
+        public const string StatusChecked = "Email.ProviderStatusChecked";
+        public const string MonitorCheckFailed = "Email.ProviderQuotaMonitorCheckFailed";
+        public const string SandboxMode = "Email.ProviderSandboxMode";
     }
 
     public static class Outbox

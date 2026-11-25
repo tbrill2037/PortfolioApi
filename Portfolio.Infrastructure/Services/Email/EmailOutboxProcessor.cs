@@ -1,41 +1,36 @@
-﻿using Amazon.SQS;
-using Amazon.SQS.Model;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Portfolio.Application.Common.Interfaces.Email;
 using Portfolio.Application.Common.Logging;
 using Portfolio.Application.Common.Models.Email;
 using Portfolio.Application.Common.Serialization;
 using Portfolio.Domain.Entities;
-using Portfolio.Infra.AWS.Configuration;
+using Portfolio.Infra.Email.Configuration;
 using System.Text.Json;
 
 namespace Portfolio.Infra.Services.Email;
 
 /// <summary>
-/// Processes pending email outbox records and publishes them to SQS.
+/// Processes pending email outbox records and publishes them to the email queue.
 /// </summary>
 public sealed class EmailOutboxProcessor : IEmailOutboxProcessor
 {
     private const int BatchSize = 20;
     private static readonly TimeSpan LockDuration = TimeSpan.FromMinutes(5);
-
     private readonly IEmailOutboxRepository _emailOutboxRepository;
-    private readonly IAmazonSQS _sqs;
-    private readonly SqsOptions _sqsOptions;
+    private readonly IEmailQueuePublisher _queuePublisher;
     private readonly int _maxRetryCount;
     private readonly ILogger<EmailOutboxProcessor> _logger;
 
     public EmailOutboxProcessor(
         IEmailOutboxRepository emailOutboxRepository,
-        IAmazonSQS sqs,
-        IOptions<SqsOptions> sqsOptions,
+        IEmailQueuePublisher queuePublisher,
+        IOptions<EmailProcessingOptions> processingOptions,
         ILogger<EmailOutboxProcessor> logger)
     {
         _emailOutboxRepository = emailOutboxRepository;
-        _sqs = sqs;
-        _sqsOptions = sqsOptions.Value;
-        _maxRetryCount = _sqsOptions.MaxEmailRetries;
+        _queuePublisher = queuePublisher;
+        _maxRetryCount = processingOptions.Value.MaxOutboxRetries;
         _logger = logger;
     }
 
@@ -65,7 +60,7 @@ public sealed class EmailOutboxProcessor : IEmailOutboxProcessor
             using var messageScope = _logger.BeginScope(new Dictionary<string, object?>
             {
                 [LoggingProperties.OutboxMessageId] = message.Id,
-                [LoggingProperties.MessageId] = message.EmailMessageId,
+                [LoggingProperties.EmailMessageId] = message.EmailMessageId,
             });
 
             try
@@ -103,12 +98,8 @@ public sealed class EmailOutboxProcessor : IEmailOutboxProcessor
                     "{EventName} | Publishing email message to queue.",
                     EmailLogEvents.Outbox.PublishingStarted);
 
-                var response = await _sqs.SendMessageAsync(
-                    new SendMessageRequest
-                    {
-                        QueueUrl = _sqsOptions.EmailQueueUrl,
-                        MessageBody = message.PayloadJson,
-                    },
+                var queueMessageId = await _queuePublisher.PublishAsync(
+                    email,
                     cancellationToken);
 
                 var published = await _emailOutboxRepository.MarkPublishedAsync(
@@ -121,7 +112,7 @@ public sealed class EmailOutboxProcessor : IEmailOutboxProcessor
                     failed++;
 
                     _logger.LogWarning(
-                        "{EventName} | Lost outbox lock after publishing. Duplicate SQS delivery possible.",
+                        "{EventName} | Lost outbox lock after publishing. Duplicate queue delivery possible.",
                         EmailLogEvents.Outbox.LockLost);
 
                     continue;
@@ -134,9 +125,9 @@ public sealed class EmailOutboxProcessor : IEmailOutboxProcessor
 
                 succeeded++;
 
-                using var sqsScope = _logger.BeginScope(new Dictionary<string, object?>
+                using var queueScope = _logger.BeginScope(new Dictionary<string, object?>
                 {
-                    [LoggingProperties.SqsMessageId] = response.MessageId,
+                    [LoggingProperties.QueueMessageId] = queueMessageId,
                 });
 
                 _logger.LogInformation(
