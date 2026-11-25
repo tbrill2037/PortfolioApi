@@ -16,12 +16,12 @@ public interface IEmailRepository
     Task AddAsync(EmailMessageEntity email, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Retrieves an email message by its SES message identifier.
+    /// Retrieves an email message by its provider message identifier.
     /// </summary>
-    /// <param name="sesMessageId">The SES message identifier.</param>
-    /// <param name="cancellationToken">A token used to cancel the operation.</param>
-    /// <returns>The matching email message, or <see langword="null"/> if none exists.</returns>
-    Task<EmailMessageEntity?> GetBySesMessageIdAsync(string sesMessageId, CancellationToken cancellationToken);
+    /// <param name="providerMessageId">The email provider's message identifier.</param>
+    Task<EmailMessageEntity?> GetByProviderMessageIdAsync(
+        string providerMessageId,
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// Attempts to acquire a processing lock for an email message.
@@ -51,13 +51,13 @@ public interface IEmailRepository
     /// </summary>
     /// <param name="emailId">The email message identifier.</param>
     /// <param name="lockToken">The processing lock token.</param>
-    /// <param name="sesMessageId">The SES message identifier.</param>
+    /// <param name="providerMessageId">The email provider's message identifier.</param>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
     /// <returns><see langword="true"/> if the update succeeded; otherwise, <see langword="false"/>.</returns>
     Task<bool> MarkSentAsync(
         Guid emailId,
         Guid lockToken,
-        string sesMessageId,
+        string providerMessageId,
         CancellationToken cancellationToken);
 
     /// <summary>

@@ -1,7 +1,7 @@
 ﻿namespace Portfolio.Domain.Entities.Email;
 
 /// <summary>
-/// Represents an email message that has been moved to the dead-letter queue.
+/// Represents an email message that has been moved to a dead-letter queue.
 /// </summary>
 public sealed class EmailDeadLetterEntity
 {
@@ -9,7 +9,7 @@ public sealed class EmailDeadLetterEntity
 
     public Guid? EmailMessageId { get; set; }
 
-    public required string SqsMessageId { get; set; }
+    public required string QueueMessageId { get; set; }
 
     public required string Payload { get; set; }
 

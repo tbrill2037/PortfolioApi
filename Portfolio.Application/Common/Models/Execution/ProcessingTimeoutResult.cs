@@ -1,8 +1,8 @@
-﻿namespace Portfolio.Application.Common.Models.Lambda;
+﻿namespace Portfolio.Application.Common.Models.Execution;
 
 /// <summary>
-/// Represents the configured timeout information used during Lambda processing.
-/// Owns the cancellation token source used to stop processing before Lambda termination.
+/// Represents the timeout information used during execution.
+/// Owns the cancellation token source used to stop processing before execution expires.
 /// </summary>
 public sealed class ProcessingTimeoutResult : IDisposable
 {

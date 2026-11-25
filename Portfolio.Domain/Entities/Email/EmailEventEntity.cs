@@ -14,13 +14,13 @@ public sealed class EmailEventEntity
     public EmailMessageEntity? EmailMessage { get; set; }
 
     /// <summary>
-    /// The Amazon SES message identifier associated with this event.
+    /// The email provider's message identifier associated with this event.
     /// </summary>
-    public required string SesMessageId { get; set; }
+    public required string ProviderMessageId { get; set; }
 
-    public string? SnsMessageId { get; set; }
+    public string? TransportMessageId { get; set; }
 
-    public string? TopicArn { get; set; }
+    public string? TransportTopic { get; set; }
 
     public EmailEventType EventType { get; set; }
 

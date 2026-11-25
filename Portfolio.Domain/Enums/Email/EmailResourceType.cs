@@ -6,5 +6,5 @@
 public enum EmailResourceType
 {
     Embedded = 1,
-    S3 = 2
+    External = 2
 }

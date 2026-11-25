@@ -8,10 +8,7 @@ namespace Portfolio.Application.Common.Models.Email;
 public sealed record EmailProcessResultModel
 {
     public required EmailProcessResult Result { get; init; }
-
     public Guid? CorrelationId { get; init; }
-
-    public string? SesMessageId { get; init; }
-
+    public string? ProviderMessageId { get; init; }
     public string? ErrorMessage { get; init; }
 }
