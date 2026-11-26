@@ -37,6 +37,7 @@ public static class DependencyInjection
         services.AddSingleton<IEmailEventParser, SesEventParser>();
         services.AddSingleton<IExecutionTimeoutProvider, LambdaExecutionTimeoutProvider>();
 
+        services.Configure<LambdaOptions>(configuration.GetSection(LambdaOptions.SectionName));
         services.Configure<SqsOptions>(configuration.GetSection(SqsOptions.SectionName));
         services.Configure<SesOptions>(configuration.GetSection(SesOptions.SectionName));
         services.Configure<S3Options>(configuration.GetSection(S3Options.SectionName));
