@@ -1,25 +1,16 @@
 name: Deploy Email Outbox Worker
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "Portfolio.Application/**"
-      - "Portfolio.Domain/**"
-      - "Portfolio.Infra/**"
-      - "Portfolio.sln"
+  workflow_call:
 
-  workflow_dispatch:
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
-    permissions:
-      id-token: write
-      contents: read
 
     steps:
       - name: Checkout
