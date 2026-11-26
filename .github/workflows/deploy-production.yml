@@ -1,0 +1,108 @@
+
+name: Deploy Production
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+jobs:
+  detect:
+    name: Detect Changed Projects
+    runs-on: ubuntu-latest
+    outputs:
+      shared: ${{ steps.filter.outputs.shared }}
+      api: ${{ steps.filter.outputs.api }}
+      email_worker: ${{ steps.filter.outputs.email_worker }}
+      outbox_worker: ${{ steps.filter.outputs.outbox_worker }}
+      event_worker: ${{ steps.filter.outputs.event_worker }}
+      dlq_worker: ${{ steps.filter.outputs.dlq_worker }}
+      migrations: ${{ steps.filter.outputs.migrations }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          base: ${{ github.event.before }}
+          filters: |
+            shared:
+              - 'Portfolio.Application/**'
+              - 'Portfolio.Domain/**'
+              - 'Portfolio.Infrastructure/**'
+
+            api:
+              - 'Portfolio.Api/**'
+
+            email_worker:
+              - 'Portfolio.EmailWorker/**'
+
+            outbox_worker:
+              - 'Portfolio.EmailOutboxWorker/**'
+
+            event_worker:
+              - 'Portfolio.EmailEventWorker/**'
+
+            dlq_worker:
+              - 'Portfolio.EmailDlqWorker/**'
+
+            migrations:
+              - 'Portfolio.Api/**'
+              - 'Portfolio.Domain/**'
+              - 'Portfolio.Infrastructure/**'
+              - 'Portfolio.sln'
+
+  migrate:
+    name: Migrate Production Database
+    needs: detect
+    if: needs.detect.outputs.migrations == 'true'
+    uses: ./.github/workflows/migrate-database.yml
+    secrets: inherit
+
+  deploy-api:
+    name: Deploy API
+    needs: [detect, migrate]
+    if: always() && (needs.detect.outputs.api == 'true' || needs.detect.outputs.shared == 'true') && (needs.migrate.result == 'success' || needs.migrate.result == 'skipped')
+    uses: ./.github/workflows/deploy-api.yml
+    secrets: inherit
+
+  deploy-email-worker:
+    name: Deploy Email Worker
+    needs: [detect, migrate]
+    if: always() && (needs.detect.outputs.email_worker == 'true' || needs.detect.outputs.shared == 'true') && (needs.migrate.result == 'success' || needs.migrate.result == 'skipped')
+    uses: ./.github/workflows/deploy-email-worker.yml
+    secrets: inherit
+
+  deploy-email-outbox-worker:
+    name: Deploy Email Outbox Worker
+    needs: [detect, migrate]
+    if: always() && (needs.detect.outputs.outbox_worker == 'true' || needs.detect.outputs.shared == 'true') && (needs.migrate.result == 'success' || needs.migrate.result == 'skipped')
+    uses: ./.github/workflows/deploy-email-outbox-worker.yml
+    secrets: inherit
+
+  deploy-email-event-worker:
+    name: Deploy Email Event Worker
+    needs: [detect, migrate]
+    if: always() && (needs.detect.outputs.event_worker == 'true' || needs.detect.outputs.shared == 'true') && (needs.migrate.result == 'success' || needs.migrate.result == 'skipped')
+    uses: ./.github/workflows/deploy-email-event-worker.yml
+    secrets: inherit
+
+  deploy-email-dlq-worker:
+    name: Deploy Email DLQ Worker
+    needs: [detect, migrate]
+    if: always() && (needs.detect.outputs.dlq_worker == 'true' || needs.detect.outputs.shared == 'true') && (needs.migrate.result == 'success' || needs.migrate.result == 'skipped')
+    uses: ./.github/workflows/deploy-email-dlq-worker.yml
+    secrets: inherit

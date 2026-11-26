@@ -1,16 +1,7 @@
 name: Deploy Email Event Worker
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "Portfolio.Application/**"
-      - "Portfolio.Domain/**"
-      - "Portfolio.Infra/**"
-      - "Portfolio.sln"
-
-  workflow_dispatch:
+  workflow_call:
 
 permissions:
   id-token: write

@@ -1,0 +1,61 @@
+name: Migrate Production Database
+
+on:
+  workflow_call:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: production-database-migrations
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    name: Apply Production Migrations
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::493534446004:role/GitHubActionsPortfolioDeploy
+          aws-region: us-east-1
+
+      - name: Load database configuration
+        shell: bash
+        run: |
+          SECRET=$(aws secretsmanager get-secret-value \
+            --secret-id portfolio-api-production \
+            --query SecretString \
+            --output text)
+
+          {
+            echo "Database__Server=$(jq -r '.["Database:Server"]' <<< "$SECRET")"
+            echo "Database__Database=$(jq -r '.["Database:Database"]' <<< "$SECRET")"
+            echo "Database__UserId=$(jq -r '.["Database:UserId"]' <<< "$SECRET")"
+            echo "Database__Password=$(jq -r '.["Database:Password"]' <<< "$SECRET")"
+          } >> "$GITHUB_ENV"
+
+      - name: Restore
+        run: dotnet restore Portfolio.sln
+
+      - name: Install EF Core Tools
+        run: dotnet tool install --global dotnet-ef --version 10.*
+
+      - name: Apply migrations
+        run: |
+          dotnet ef database update \
+            --project Portfolio.Infrastructure/Portfolio.Infra.csproj \
+            --startup-project Portfolio.Api/Portfolio.Api.csproj \
+            --context ApplicationDbContext \
+            --configuration Release
