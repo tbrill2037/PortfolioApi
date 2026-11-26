@@ -56,6 +56,5 @@ jobs:
         run: |
           dotnet ef database update \
             --project Portfolio.Infrastructure/Portfolio.Infra.csproj \
-            --startup-project Portfolio.Api/Portfolio.Api.csproj \
             --context ApplicationDbContext \
             --configuration Release
